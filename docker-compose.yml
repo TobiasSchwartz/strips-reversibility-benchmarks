@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  reversibility:
+    build: .
+    container_name: reversibility
+    volumes:
+      - ./:/reversibility
