@@ -21,7 +21,7 @@
 ## Summary
 
 In planning, the reversibility of actions deals with the question whether the effects of an action can be undone using a reverse plan. This repository provides a prototypical implementation (see [`reversible.py`](reversible.py)) of the action reversibility algorithm proposed by 
-M. Morak, L. Chrpa, W. Faber, and D. Fiser in their paper "On the reversibility of actions in planning" (KR 2020) using a depth-first search (`dfs`) and breadth-first search (`bfs`) strategy. This implementation is evaluated following the PDDL domain generator approach of L. Chrpa, W. Faber, D. Fiser, and M. Morak, which they proposed and used in their paper "Determining action reversibility in STRIPS using answer set programming" (ICLP 2020) to evaluate the performance of their answer set programming (`asp`) based implementation. We extend their domain generator template (`singlePath`) to a `multiplePaths` and `multiplePathsDeadEnds` template (see [`domainGenerator.py`](domainGenerator.py)). The produced benchmarks (see [`benchmarks.py`](benchmarks.py)) reveal that even slight changes in the domain generator template suffice to introduce a radical bias that either favors the `bfs`, `dfs`, or `asp` approach. Hence, care must be taken when evaluating algorithms for action reversibility using PDDL domains obtained from domain generators.
+M. Morak, L. Chrpa, W. Faber, and D. Fiser in their paper "On the reversibility of actions in planning" (KR 2020) using a depth-first search (`dfs`) and breadth-first search (`bfs`) strategy. This implementation is evaluated following the PDDL domain generator approach of L. Chrpa, W. Faber, D. Fiser, and M. Morak, which they proposed and used in their paper "Determining action reversibility in STRIPS using answer set programming" (ICLP 2020) to evaluate the performance of their answer set programming (`asp`) based implementation. We extend their domain generator template (`singlePath`) to a `multiplePaths` and `multiplePathsDeadEnds` template (see [`domainGenerator.py`](domainGenerator.py)). The produced benchmarks (see [`benchmark.py`](benchmark.py)) reveal that even slight changes in the domain generator template suffice to introduce a radical bias that either favors the `bfs`, `dfs`, or `asp` approach. Hence, care must be taken when evaluating algorithms for action reversibility using PDDL domains obtained from domain generators.
 
 ## Setup
 
@@ -33,7 +33,7 @@ We use [google/python-fire](https://github.com/google/python-fire) to automatica
 
 - [`reversible.py`](reversible.py) to search for reverse plans of an action in a PDDL domain
 - [`domainGenerator.py`](domainGenerator.py) to generate PDDL domains following the `singlePath`, `multiplePaths`, or `multiplePathsDeadEnds` template
-- [`benchmark.py`](benchmarks.py) to obtain the performance of a reverse plan search
+- [`benchmark.py`](benchmark.py) to obtain the performance of a reverse plan search
 
 Run `./<script> --help` where `<script>` is one of the three provided python scripts to obtain information on required command line arguments.
 
