@@ -119,6 +119,47 @@ def multiplePathsDeadEnds(i):
 
     return domain
 
+def barabasiAlbert(i):
+    """
+    Generates a PDDL domain with multiple reverse plans and possible dead ends for action del-all of length 0.5 * i * (i+1).
+
+    :param i: length of the single reverse plan
+    :return: the PDDL doamin in string format
+    """
+
+    predicates = [f"(f{j})" for j in range(0, i+1)]
+
+    not_predicates = [f"(not {p})" for p in predicates]
+
+    newline = "\n"
+
+    actions = [f"""
+    (:action add-f{j}
+    :precondition (f{j-1})
+    :effect (and (f{j}) {' '.join([f'(not (f{i}))' for i in range(j)])}))
+    """ for j in range(1, i+1)]
+
+    domain = f"""
+    (define (domain quadratic-{i})
+    (:requirements :strips)
+    (:predicates {" ".join(predicates + ["(token)"])})
+
+    (:action del-all
+    :precondition (and {" ".join(predicates + ["(token)"])})
+    :effect (and {" ".join(not_predicates)}))
+
+    (:action add-f0
+    :effect (f0))
+
+    {newline.join(actions)}
+
+    (:action consume
+    :precondition (token)
+    :effect (not (token))))
+    """
+
+    return domain
+
 
 def generateDomains(folder, start, limit, step, domain):
     """
