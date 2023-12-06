@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+import networkx as nx
+import random
+import matplotlib.pyplot as plt
+
 def singlePath(i):
     """
     Generates a PDDL domain where there exists only a single reverse plan for action del-all of length i.
@@ -119,7 +123,7 @@ def multiplePathsDeadEnds(i):
 
     return domain
 
-def barabasiAlbert(i):
+def barabasiAlbert(m, n):
     """
     Generates a PDDL domain with multiple reverse plans and possible dead ends for action del-all of length 0.5 * i * (i+1).
 
@@ -127,36 +131,49 @@ def barabasiAlbert(i):
     :return: the PDDL doamin in string format
     """
 
-    predicates = [f"(f{j})" for j in range(0, i+1)]
+    seed = random.seed(246)
+
+    G = nx.barabasi_albert_graph(m, n, seed=seed)
+    # TODO evaluate pairs and not hard coded nodes
+    G.remove_edge(0, 9)
+    G = nx.to_directed(G)
+
+    predicates = [f"(f{j})" for j in G.nodes]
 
     not_predicates = [f"(not {p})" for p in predicates]
 
     newline = "\n"
 
     actions = [f"""
-    (:action add-f{j}
-    :precondition (f{j-1})
-    :effect (and (f{j}) {' '.join([f'(not (f{i}))' for i in range(j)])}))
-    """ for j in range(1, i+1)]
+    (:action add-f{u}-f{v}
+    :precondition (f{u})
+    :effect (f{v}))
+    """ for (u, v) in G.edges]
 
     domain = f"""
-    (define (domain quadratic-{i})
+    (define (domain ba-{m}-{n})
     (:requirements :strips)
-    (:predicates {" ".join(predicates + ["(token)"])})
+    (:predicates {" ".join(predicates)})
 
     (:action del-all
-    :precondition (and {" ".join(predicates + ["(token)"])})
-    :effect (and {" ".join(not_predicates)}))
+    :precondition (f9)
+    :effect (and {" ".join(not_predicates)})
+    )
 
     (:action add-f0
     :effect (f0))
 
     {newline.join(actions)}
-
-    (:action consume
-    :precondition (token)
-    :effect (not (token))))
+    )
     """
+
+    print(domain)
+
+    nx.draw(G, with_labels=True)
+
+    plt.savefig("graph_visualization.png", format="png")
+
+    nx.draw(G)
 
     return domain
 
@@ -199,5 +216,8 @@ def generateDomains(folder, start, limit, step, domain):
 
 
 if __name__ == "__main__":
-    import fire
-    fire.Fire(generateDomains)
+    #import fire
+    #fire.Fire(generateDomains)
+
+    # TODO workaround until barabasiAlbert is fully implemented
+    barabasiAlbert(10, 5)
