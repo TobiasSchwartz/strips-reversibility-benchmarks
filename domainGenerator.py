@@ -125,7 +125,7 @@ def multiplePathsDeadEnds(i):
 
 def barabasiAlbert(m, n):
     """
-    Generates a PDDL domain with multiple reverse plans and possible dead ends for action del-all of length 0.5 * i * (i+1).
+    Generates a PDDL domain based on Barabasi-Albert graphs. Multiple domains are returned, one for each node pair.
 
     :param i: length of the single reverse plan
     :return: the PDDL doamin in string format
@@ -133,49 +133,59 @@ def barabasiAlbert(m, n):
 
     seed = random.seed(246)
 
+    from itertools import combinations
+
     G = nx.barabasi_albert_graph(m, n, seed=seed)
-    # TODO evaluate pairs and not hard coded nodes
-    G.remove_edge(0, 9)
-    G = nx.to_directed(G)
 
-    predicates = [f"(f{j})" for j in G.nodes]
+    for (node_a, node_b) in combinations(G.nodes, 2):
 
-    not_predicates = [f"(not {p})" for p in predicates]
+        G = nx.barabasi_albert_graph(m, n, seed=seed)
 
-    newline = "\n"
+        try:
+            G.remove_edge(node_a, node_b)
+        except:
+            pass
+        
+        G = nx.to_directed(G)
 
-    actions = [f"""
-    (:action add-f{u}-f{v}
-    :precondition (f{u})
-    :effect (f{v}))
-    """ for (u, v) in G.edges]
+        predicates = [f"(f{j})" for j in G.nodes]
 
-    domain = f"""
-    (define (domain ba-{m}-{n})
-    (:requirements :strips)
-    (:predicates {" ".join(predicates)})
+        not_predicates = [f"(not {p})" for p in predicates]
 
-    (:action del-all
-    :precondition (f9)
-    :effect (and {" ".join(not_predicates)})
-    )
+        newline = "\n"
 
-    (:action add-f0
-    :effect (f0))
+        actions = [f"""
+        (:action add-f{u}-f{v}
+        :precondition (f{u})
+        :effect (f{v}))
+        """ for (u, v) in G.edges]
 
-    {newline.join(actions)}
-    )
-    """
+        domain = f"""
+        (define (domain ba-{m}-{n}-{node_a}-{node_b})
+        (:requirements :strips)
+        (:predicates {" ".join(predicates)})
 
-    print(domain)
+        (:action del-all
+        :precondition (f9)
+        :effect (and {" ".join(not_predicates)})
+        )
 
-    nx.draw(G, with_labels=True)
+        (:action add-f{node_a}
+        :effect (f{node_a}))
 
-    plt.savefig("graph_visualization.png", format="png")
+        {newline.join(actions)}
+        )
+        """
 
-    nx.draw(G)
+        yield (f"ba-{m}-{n}-{node_a}-{node_b}", domain)
 
-    return domain
+    # nx.draw(G, with_labels=True)
+
+    # plt.savefig("graph_visualization.png", format="png")
+
+    # nx.draw(G)
+
+    # return domain
 
 
 def generateDomains(folder, start, limit, step, domain):
@@ -190,6 +200,8 @@ def generateDomains(folder, start, limit, step, domain):
     :param step: step increment of argument i
     :param domain: domain type to be created ("singlePath", "multiplePaths", or "multiplePathsDeadEnds")
     """
+
+    # generate singlePath, multiplePath, and multiplePathsDeadEnds domains
     if limit >= 1000:
         print("The limit is only supported up to a value of 999.")
         return
@@ -214,10 +226,20 @@ def generateDomains(folder, start, limit, step, domain):
         print(f"and saved as file \"{filename}\"", end="")
         print("")
 
+    # generate barabasi-albert domains (multiple test cases per domain)
+    n, m = (10, 5)
 
+    for (test_case_name, test_case) in barabasiAlbert(n, m):
+        print(f"Generating {test_case_name} domain ... ")
+
+        filename = f"{folder}/{test_case_name}.pddl"
+        with open(filename, "w") as f:
+            f.write(test_case)
+            f.close()
+        print(f"and saved as file \"{filename}\"", end="")
+        print("")
+    
+    
 if __name__ == "__main__":
-    #import fire
-    #fire.Fire(generateDomains)
-
-    # TODO workaround until barabasiAlbert is fully implemented
-    barabasiAlbert(10, 5)
+    import fire
+    fire.Fire(generateDomains)
