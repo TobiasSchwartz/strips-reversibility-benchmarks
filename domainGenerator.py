@@ -136,9 +136,8 @@ def barabasiAlbert(m, n):
     from itertools import combinations
 
     G = nx.barabasi_albert_graph(m, n, seed=seed)
-
     shortest_paths = nx.all_pairs_shortest_path(G)
-    # print([sp for sp in shortest_paths])
+    G = nx.to_directed(G)
 
     shortest_paths = [list(paths.values()) for _, paths in shortest_paths]
     shortest_paths = [item for sublist in shortest_paths for item in sublist]
@@ -148,15 +147,6 @@ def barabasiAlbert(m, n):
 
         node_a = path[0]
         node_b = path[-1]
-
-        G = nx.barabasi_albert_graph(m, n, seed=seed)
-
-        try:
-            G.remove_edge(node_a, node_b)
-        except:
-            pass
-        
-        G = nx.to_directed(G)
 
         predicates = [f"(f{j})" for j in G.nodes]
 

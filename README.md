@@ -35,19 +35,19 @@ We use [google/python-fire](https://github.com/google/python-fire) to automatica
 - [`domainGenerator.py`](domainGenerator.py) to generate PDDL domains following the `singlePath`, `multiplePaths`, or `multiplePathsDeadEnds` template
 - [`benchmark.py`](benchmark.py) to obtain the performance of a reverse plan search
 
-Run `./<script> --help` where `<script>` is one of the three provided python scripts to obtain information on required command line arguments.
+Run `python3 ./<script> --help` where `<script>` is one of the three provided python scripts to obtain information on required command line arguments.
 
 ## Examples
 
 Generate a single PDDL domain using the `singlePath` template with argument value `100`
 ```
-root@f0606f1aec12:/reversibility# ./domainGenerator.py domains 5 5 1 singlePath
+root@f0606f1aec12:/reversibility# python3 ./domainGenerator.py domains 5 5 1 singlePath
 Generating singlePath domain for input i = 5 ... done ... and saved as file "domains/singlePath_d005.pddl"
 ```
 
 Find a reverse plan for action `del-all` in the PDDL domain created above using a `dfs` strategy:
 ```
-root@f0606f1aec12:/reversibility# ./reversible.py domains/singlePath_d005.pddl del-all dfs
+root@f0606f1aec12:/reversibility# python3 ./reversible.py domains/singlePath_d005.pddl del-all dfs
 Computing a reverse plan for action "del-all" ... I have found the following solutions:
 F0:
 Fplus: f1, f4, f0, f5, f3, f2
@@ -60,7 +60,7 @@ I wont look for further solutions, because "findSingleSolution" is enabled
 
 Obtain performance benchmark information for the above example using the `asp` approach:
 ```
-root@f0606f1aec12:/reversibility# ./benchmark.py asp domains/singlePath_d005.pddl del-all 6 10
+root@f0606f1aec12:/reversibility# python3 ./benchmark.py asp domains/singlePath_d005.pddl del-all 6 10
 clingo version 5.4.0
 Reading from /tools/sequential-horizon.uurev.lp ...
 Solving...
@@ -76,4 +76,4 @@ CPU Time     : 0.004s
 
 ## Experiments
 
-Execute the [`experiments.py`](experiments.py) script from within the docker container via `./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`) combination.
+Execute the [`experiments.py`](experiments.py) script from within the docker container via `python3 ./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`) combination.
