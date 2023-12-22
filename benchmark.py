@@ -45,6 +45,7 @@ def eval_domain_ours(filename, strategy, horizon, timeoutLimit):
     except TimeoutError:
         return (filename, -1, -1)
 
+# TODO: deprecate? isn't called anywhere
 def foo():
     from pathlib import Path
 
@@ -126,7 +127,7 @@ def parseSetSize(output):
 def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit):
     if approach == "bfs" or approach == "dfs":
         try:
-            command = f"/usr/bin/time -v ./reversible.py {domainPath} {reversibleActionName} {approach} {horizon} True"
+            command = f"/usr/bin/time -v python3 ./reversible.py {domainPath} {reversibleActionName} {approach} {horizon} True"
             output = subprocess.run(command, text=True, capture_output=True, shell=True, timeout=timeoutLimit)
             print(output.stdout)
             wallClock = parseWallClock(output)

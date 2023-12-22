@@ -87,7 +87,7 @@ def multiplePathsDeadEnds(i):
     Generates a PDDL domain with multiple reverse plans and possible dead ends for action del-all of length 0.5 * i * (i+1).
 
     :param i: length of the single reverse plan
-    :return: the PDDL doamin in string format
+    :return: the PDDL domain in string format
     """
 
     predicates = [f"(f{j})" for j in range(0, i+1)]
@@ -125,10 +125,10 @@ def multiplePathsDeadEnds(i):
 
 def barabasiAlbert(m, n):
     """
-    Generates a PDDL domain based on Barabasi-Albert graphs. Multiple domains are returned, one for each node pair.
+    Generates a PDDL domain based on Barabasi-Albert graphs. Multiple test instances are returned for a domain. Only the ten node pairs with highest hop distance are considered.
 
     :param i: length of the single reverse plan
-    :return: the PDDL doamin in string format
+    :return: the PDDL domain in string format
     """
 
     seed = random.seed(246)
@@ -137,7 +137,17 @@ def barabasiAlbert(m, n):
 
     G = nx.barabasi_albert_graph(m, n, seed=seed)
 
-    for (node_a, node_b) in combinations(G.nodes, 2):
+    shortest_paths = nx.all_pairs_shortest_path(G)
+    # print([sp for sp in shortest_paths])
+
+    shortest_paths = [list(paths.values()) for _, paths in shortest_paths]
+    shortest_paths = [item for sublist in shortest_paths for item in sublist]
+    longest_shortest_paths = sorted(shortest_paths, key=lambda x: len(x), reverse=True)[:10]
+
+    for path in longest_shortest_paths:
+
+        node_a = path[0]
+        node_b = path[-1]
 
         G = nx.barabasi_albert_graph(m, n, seed=seed)
 
@@ -161,12 +171,12 @@ def barabasiAlbert(m, n):
         """ for (u, v) in G.edges]
 
         domain = f"""
-        (define (domain ba-{m}-{n}-{node_a}-{node_b})
+        (define (domain barabasiAlbert_{m}-{n}-{node_a}-{node_b})
         (:requirements :strips)
         (:predicates {" ".join(predicates)})
 
         (:action del-all
-        :precondition (f9)
+        :precondition (f{node_b})
         :effect (and {" ".join(not_predicates)})
         )
 
@@ -177,15 +187,12 @@ def barabasiAlbert(m, n):
         )
         """
 
-        yield (f"ba-{m}-{n}-{node_a}-{node_b}", domain)
+        yield (f"barabasiAlbert_{m}-{n}-{node_a}-{node_b}", domain)
 
-    # nx.draw(G, with_labels=True)
-
-    # plt.savefig("graph_visualization.png", format="png")
-
-    # nx.draw(G)
-
-    # return domain
+        # nx.draw(G, with_labels=True)
+        # plt.savefig("graph_visualization.png", format="png")
+        # nx.draw(G)
+        # break
 
 
 def generateDomains(folder, start, limit, step, domain):
@@ -201,44 +208,46 @@ def generateDomains(folder, start, limit, step, domain):
     :param domain: domain type to be created ("singlePath", "multiplePaths", or "multiplePathsDeadEnds")
     """
 
-    # generate singlePath, multiplePath, and multiplePathsDeadEnds domains
-    if limit >= 1000:
-        print("The limit is only supported up to a value of 999.")
-        return
-    domainFunctions = [singlePath, multiplePaths, multiplePathsDeadEnds]
-    
-    if domain not in [f.__name__ for f in domainFunctions]:
-        print(f"The provided domain \"{domain}\" does not have a corresponding domain function.")
-        return
-    domainFunction = [f for f in domainFunctions if f.__name__ == domain][0]
-    
-    from pathlib import Path
-    Path(folder).mkdir(parents=True, exist_ok=True)
+    if domain == "barabasiAlbert":
+         # generate barabasi-albert domains (multiple test cases per domain)
+        n, m = (100, 10)
 
-    for i in range(start, limit+1, step):
-        print(f"Generating {domain} domain for input i = {i} ... ", end="")
-        domainString = domainFunction(i)
-        print(f"done ... ", end="")
-        filename = f"{folder}/{domain}_d{str(i).zfill(3)}.pddl"
-        with open(filename, "w") as f:
-            f.write(domainString)
-            f.close()
-        print(f"and saved as file \"{filename}\"", end="")
-        print("")
+        for (test_case_name, test_case) in barabasiAlbert(n, m):
+            print(f"Generating {test_case_name} domain ... ")
 
-    # generate barabasi-albert domains (multiple test cases per domain)
-    n, m = (10, 5)
+            filename = f"{folder}/{test_case_name}.pddl"
+            with open(filename, "w") as f:
+                f.write(test_case)
+                f.close()
+            print(f"and saved as file \"{filename}\"", end="")
+            print("")
 
-    for (test_case_name, test_case) in barabasiAlbert(n, m):
-        print(f"Generating {test_case_name} domain ... ")
+    else:
+        # generate singlePath, multiplePath, and multiplePathsDeadEnds domains
+        if limit >= 1000:
+            print("The limit is only supported up to a value of 999.")
+            return
+        domainFunctions = [singlePath, multiplePaths, multiplePathsDeadEnds]
+        
+        if domain not in [f.__name__ for f in domainFunctions]:
+            print(f"The provided domain \"{domain}\" does not have a corresponding domain function.")
+            return
+        domainFunction = [f for f in domainFunctions if f.__name__ == domain][0]
+        
+        from pathlib import Path
+        Path(folder).mkdir(parents=True, exist_ok=True)
 
-        filename = f"{folder}/{test_case_name}.pddl"
-        with open(filename, "w") as f:
-            f.write(test_case)
-            f.close()
-        print(f"and saved as file \"{filename}\"", end="")
-        print("")
-    
+        for i in range(start, limit+1, step):
+            print(f"Generating {domain} domain for input i = {i} ... ", end="")
+            domainString = domainFunction(i)
+            print(f"done ... ", end="")
+            filename = f"{folder}/{domain}_d{str(i).zfill(3)}.pddl"
+            with open(filename, "w") as f:
+                f.write(domainString)
+                f.close()
+            print(f"and saved as file \"{filename}\"", end="")
+            print("")
+
     
 if __name__ == "__main__":
     import fire
