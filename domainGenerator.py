@@ -203,7 +203,7 @@ def generateDomains(folder, start, limit, step, domain):
 
     if domain == "barabasiAlbert":
          # generate barabasi-albert domains (multiple test cases per domain)
-        n, m = (100, 10)
+        n, m = (5, 2)
 
         for (test_case_name, test_case) in barabasiAlbert(n, m):
             print(f"Generating {test_case_name} domain ... ")
