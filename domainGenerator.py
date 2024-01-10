@@ -198,6 +198,9 @@ def generateDomains(folder, start, limit, step, domain):
     :param domain: domain type to be created ("singlePath", "multiplePaths", or "multiplePathsDeadEnds")
     """
 
+    from pathlib import Path
+    Path(folder).mkdir(parents=True, exist_ok=True)
+
     if domain == "barabasiAlbert":
          # generate barabasi-albert domains (multiple test cases per domain)
         n, m = (100, 10)
@@ -223,9 +226,6 @@ def generateDomains(folder, start, limit, step, domain):
             print(f"The provided domain \"{domain}\" does not have a corresponding domain function.")
             return
         domainFunction = [f for f in domainFunctions if f.__name__ == domain][0]
-        
-        from pathlib import Path
-        Path(folder).mkdir(parents=True, exist_ok=True)
 
         for i in range(start, limit+1, step):
             print(f"Generating {domain} domain for input i = {i} ... ", end="")
