@@ -10,7 +10,7 @@ def eval_domain_theirs(filename, horizon, timeoutLimit):
     subprocess.run([c0], text=True, capture_output=True, shell=True)
     c1 = f"./plasp translate {filename} > ./artif_examples/{filename}.lp"
     subprocess.run(c1, text=True, capture_output=True, shell=True)
-    c2 = f"/usr/bin/time -v ./clingo sequential-horizon.uurev.lp -c horizon={horizon} artif_examples/{filename}.lp"
+    c2 = f"/usr/bin/time -v ./clingo sequential-horizon.simple.elp -c horizon={horizon} artif_examples/{filename}.lp"
     try:
         output = subprocess.run(c2, text=True, capture_output=True, shell=True, timeout=timeoutLimit)
         print(output)

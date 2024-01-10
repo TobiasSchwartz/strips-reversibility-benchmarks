@@ -25,7 +25,8 @@ WORKDIR /tools
 # "Determining action reversibility in STRIPS using answer set programming",
 # In International Conference on Logic Programming 2020 (ICLP 2020),
 # [Online]. Available: http://ceur-ws.org/Vol-2678/paper2.pdf
-# RUN wget https://seafile.aau.at/seafhttp/files/a051629f-a159-4b5b-a7af-18c07a3b0bbc/sequential-horizon.uurev.lp
+# Benchmark files found here: https://seafile.aau.at/d/e0aedc92b4c546d5bf9a/
+RUN wget https://seafile.aau.at/seafhttp/files/bd140d77-2963-47eb-a443-7247387e4e52/sequential-horizon.uurev.lp
 
 # download action.py and PDDL.py from github.com/pucrs-automated-planning/pddl-parser
 RUN wget https://raw.githubusercontent.com/pucrs-automated-planning/pddl-parser/581a0905b2cf3f481d84df56ac65fbb52902eddf/action.py

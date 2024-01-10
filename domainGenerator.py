@@ -166,7 +166,7 @@ def barabasiAlbert(m, n):
         (:predicates {" ".join(predicates)})
 
         (:action del-all
-        :precondition (f{node_b})
+        :precondition (and {" ".join([f"(f{node})" for node in path])})
         :effect (and {" ".join(not_predicates)})
         )
 
