@@ -149,8 +149,10 @@ def barabasiAlbert(m, n):
         node_b = path[-1]
 
         predicates = [f"(f{j})" for j in G.nodes]
+        path_predicates = [f"(f{p})" for p in path]
+        neg_path_predicates = [f"(not {p})" for p in path_predicates]
 
-        not_predicates = [f"(not {p})" for p in predicates]
+        # not_predicates = [f"(not {p})" for p in predicates]
 
         newline = "\n"
 
@@ -166,8 +168,8 @@ def barabasiAlbert(m, n):
         (:predicates {" ".join(predicates)})
 
         (:action del-all
-        :precondition (and {" ".join([f"(f{node})" for node in path])})
-        :effect (and {" ".join(not_predicates)})
+        :precondition (and {" ".join(path_predicates)})
+        :effect (and {" ".join(neg_path_predicates)})
         )
 
         (:action add-f{node_a}
@@ -203,7 +205,7 @@ def generateDomains(folder, start, limit, step, domain):
 
     if domain == "barabasiAlbert":
          # generate barabasi-albert domains (multiple test cases per domain)
-        n, m = (5, 2)
+        n, m = (100, 7)
 
         for (test_case_name, test_case) in barabasiAlbert(n, m):
             print(f"Generating {test_case_name} domain ... ")
