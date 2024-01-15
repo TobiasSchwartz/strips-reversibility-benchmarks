@@ -141,39 +141,44 @@ def barabasiAlbert(m, n):
 
     shortest_paths = [list(paths.values()) for _, paths in shortest_paths]
     shortest_paths = [item for sublist in shortest_paths for item in sublist]
-    longest_shortest_paths = sorted(shortest_paths, key=lambda x: len(x), reverse=True)[:10]
+    longest_shortest_paths = sorted(shortest_paths, key=len, reverse=True)[:10]
 
     for path in longest_shortest_paths:
 
         node_a = path[0]
         node_b = path[-1]
 
+        node_a_pred = f"(f{node_a})"
+        node_b_pred = f"(f{node_b})"
+
         predicates = [f"(f{j})" for j in G.nodes]
         path_predicates = [f"(f{p})" for p in path]
         neg_path_predicates = [f"(not {p})" for p in path_predicates]
 
-        # not_predicates = [f"(not {p})" for p in predicates]
+        not_predicates = [f"(not {p})" for p in predicates]
 
         newline = "\n"
 
         actions = [f"""
         (:action add-f{u}-f{v}
         :precondition (f{u})
-        :effect (f{v}))
+        :effect (and (f{v}) (not (f{u}))))
         """ for (u, v) in G.edges]
+
+        # + [f"(not {p})" for p in predicates if p not in path_predicates])})
 
         domain = f"""
         (define (domain barabasiAlbert_{m}-{n}-{node_a}-{node_b})
-        (:requirements :strips)
+        (:requirements :strips :negative-preconditions)
         (:predicates {" ".join(predicates)})
 
         (:action del-all
-        :precondition (and {" ".join(path_predicates)})
-        :effect (and {" ".join(neg_path_predicates)})
+        :precondition (and {node_b_pred} {" ".join([f"(not {p})" for p in predicates if p != node_b_pred])})
+        :effect (and {" ".join(not_predicates)})
         )
 
         (:action add-f{node_a}
-        :effect (f{node_a}))
+        :effect {node_a_pred})
 
         {newline.join(actions)}
         )
@@ -197,15 +202,15 @@ def generateDomains(folder, start, limit, step, domain):
     :param start: start value of argument i
     :param limit: limit of argument i
     :param step: step increment of argument i
-    :param domain: domain type to be created ("singlePath", "multiplePaths", or "multiplePathsDeadEnds")
+    :param domain: domain type to be created ("singlePath", "multiplePaths", "multiplePathsDeadEnds", or "barabasiAlbert")
     """
 
     from pathlib import Path
     Path(folder).mkdir(parents=True, exist_ok=True)
 
     if domain == "barabasiAlbert":
-         # generate barabasi-albert domains (multiple test cases per domain)
-        n, m = (100, 7)
+         # generate barabasi-albert domains (multiple test cases per domain, currently 10)
+        n, m = (5, 2)
 
         for (test_case_name, test_case) in barabasiAlbert(n, m):
             print(f"Generating {test_case_name} domain ... ")

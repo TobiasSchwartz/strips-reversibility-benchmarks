@@ -35,7 +35,8 @@ class State:
 
 
 def pre_a(action):
-    return action.negative_preconditions.union(action.positive_preconditions)
+    # return action.negative_preconditions.union(action.positive_preconditions)
+    return action.positive_preconditions
 
 
 def del_a(action):

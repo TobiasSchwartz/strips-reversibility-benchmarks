@@ -9,9 +9,8 @@ def domainFromDomainFileName(filename):
         return "multiplePaths"
     elif "barabasiAlbert" in filename:
         return "barabasiAlbert"
-
+    
 def horizonForDomainFileName(filename):
-    import re
     domain_size = int(re.sub('[^0-9]', '', str(filename)))
     domain_size += 1
     if "singlePath" in filename:
@@ -21,8 +20,14 @@ def horizonForDomainFileName(filename):
     elif "multiplePaths" in filename:
         return (int)(((domain_size) * (domain_size + 1)) * 0.5)
     elif "barabasiAlbert" in filename:
-        return (int)(filename.split("barabasiAlbert_")[1].split("-")[0])
-
+        import itertools
+        with open(filename, "r") as file:
+            lines = itertools.dropwhile(lambda line: "(:action del-all" not in line, file)
+            _, pre = next(lines), next(lines)
+            facts = re.findall(r'\(f\d+\)', pre)
+            # negative_facts = re.findall(r'\(not \(f\d+\)\)', pre)
+            return len(facts)# - len(negative_facts)
+        # return (int)(filename.split("barabasiAlbert_")[1].split("-")[0])
 
 if __name__ == "__main__":
     import benchmark
@@ -33,11 +38,11 @@ if __name__ == "__main__":
 
     import domainGenerator
 
-    timeout = 60*10
+    timeout = 60
     approaches = [
         "dfs",
         "bfs",
-        # "asp"
+        "qasp",
     ]
     domains = [
         # "singlePath",
@@ -87,7 +92,6 @@ if __name__ == "__main__":
             else:
                 csvRuntime = -1
             csvSetSize = int(setSize) / 1024
-
 
             # append results
             with open(f"./experiments/experiment-{domain}-{approach}-{time}.csv", "a+") as f:
