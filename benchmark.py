@@ -140,7 +140,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
         c1 = f"/tools/plasp translate {domainPath} > {domainPath}.lp"
         subprocess.run(c1, text=True, capture_output=True, shell=True)
 
-        c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.uurev.sat.lp -c horizon={horizon} {domainPath}.lp"
+        c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.general.asp -c horizon={horizon} {domainPath}.lp"
         try:
             output = subprocess.run(c2, text=True, capture_output=True, shell=True, timeout=timeoutLimit)
             print(output.stdout)

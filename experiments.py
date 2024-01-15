@@ -9,7 +9,7 @@ def domainFromDomainFileName(filename):
         return "multiplePaths"
     elif "barabasiAlbert" in filename:
         return "barabasiAlbert"
-    
+
 def horizonForDomainFileName(filename):
     domain_size = int(re.sub('[^0-9]', '', str(filename)))
     domain_size += 1
@@ -42,7 +42,8 @@ if __name__ == "__main__":
     approaches = [
         "dfs",
         "bfs",
-        "qasp",
+        "asp",
+        # "qasp",
     ]
     domains = [
         # "singlePath",
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     ]
     domainsFolder = "domains"
 
-    [f.unlink() for f in Path(domainsFolder).glob("*") if f.is_file()] 
+    [f.unlink() for f in Path(domainsFolder).glob("*") if f.is_file()]
 
     # domainGenerator.generateDomains(domainsFolder, 10, 500+10, 10, "singlePath")
     # domainGenerator.generateDomains(domainsFolder, 1, 36, 1, "multiplePaths")
@@ -76,7 +77,7 @@ if __name__ == "__main__":
 
             if approach == "bfs" and domain =="multiplePaths" and int(csvIvalue) > 15:
                 continue
-            
+
 
             print(f"***************** Processing {path} using {approach} approach *****************\n")
             horizon = horizonForDomainFileName(path)

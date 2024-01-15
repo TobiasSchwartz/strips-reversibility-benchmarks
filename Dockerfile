@@ -28,12 +28,19 @@ WORKDIR /tools
 # In International Conference on Logic Programming 2020 (ICLP 2020),
 # [Online]. Available: http://ceur-ws.org/Vol-2678/paper2.pdf
 # Benchmark files found here: https://seafile.aau.at/d/e0aedc92b4c546d5bf9a/
-# RUN wget https://seafile.aau.at/seafhttp/files/bd140d77-2963-47eb-a443-7247387e4e52/sequential-horizon.uurev.lp
-# RUN wget https://seafile.aau.at/seafhttp/files/76ceaa4f-5159-4702-a422-f631ec979178/sequential-horizon.uurev.sat.lp
+RUN wget --trust-server-names --referer https://seafile.aau.at/d/e0aedc92b4c546d5bf9a/files/?p=/ \ 
+    'https://seafile.aau.at/d/e0aedc92b4c546d5bf9a/files/?p=/sequential-horizon.uurev.sat.lp&dl=1'
 # For ASPQ encoding, see
 # https://seafile.aau.at/d/eb22aab5223f4e8abfcc/
-COPY ./qasp/qasp-0.1.2.jar qasp-0.1.2.jar
-COPY ./qasp/run-pddl-horizon.py run-pddl-horizon.py
+RUN wget --trust-server-names --referer https://seafile.aau.at/d/eb22aab5223f4e8abfcc/files/?p=/ \ 
+    'https://seafile.aau.at/d/eb22aab5223f4e8abfcc/files/?p=/qasp-0.1.2.jar&dl=1'
+RUN wget --trust-server-names --referer https://seafile.aau.at/d/eb22aab5223f4e8abfcc/files/?p=/ \ 
+    'https://seafile.aau.at/d/eb22aab5223f4e8abfcc/files/?p=/run-pddl-horizon.py&dl=1'
+# For QSP/ESLP encoding, see
+# https://seafile.aau.at/d/cd4cb0d65d124a619920/
+RUN wget --trust-server-names --referer https://seafile.aau.at/d/cd4cb0d65d124a619920/files/?p=/ \ 
+    'https://seafile.aau.at/d/cd4cb0d65d124a619920/files/?p=/sequential-horizon.general.asp&dl=1'
+
 
 # download action.py and PDDL.py from github.com/pucrs-automated-planning/pddl-parser
 RUN wget https://raw.githubusercontent.com/pucrs-automated-planning/pddl-parser/581a0905b2cf3f481d84df56ac65fbb52902eddf/action.py
