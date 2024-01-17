@@ -129,7 +129,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
         try:
             command = f"/usr/bin/time -v python3 ./reversible.py {domainPath} {reversibleActionName} {approach} {horizon} True"
             output = subprocess.run(command, text=True, capture_output=True, shell=True, timeout=timeoutLimit)
-            print(output.stdout)
+            # print(output.stdout)
             wallClock = parseWallClock(output)
             setSize = parseSetSize(output)
             return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, wallClock, setSize)
@@ -143,7 +143,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
         c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.general.asp -c horizon={horizon} {domainPath}.lp"
         try:
             output = subprocess.run(c2, text=True, capture_output=True, shell=True, timeout=timeoutLimit)
-            print(output.stdout)
+            print(" - ".join(output.stdout.split("\n")[4:6]))
             wallClock = parseWallClock(output)
             setSize = parseSetSize(output)
             return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, wallClock, setSize)

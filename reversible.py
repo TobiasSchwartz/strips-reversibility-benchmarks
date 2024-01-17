@@ -161,6 +161,7 @@ def find_rev(domainPathStr, reversibleActionName, strategy, maxPathLimit=-1, fin
         print(
             f"Computation aborted due to problems encountered while parsing domain {domainPathStr}!")
         print(e)
+        print(type(e).__name__, __file__, e.__traceback__.tb_lineno)
 
     if not actionFound:
         print(

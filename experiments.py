@@ -20,13 +20,14 @@ def horizonForDomainFileName(filename):
     elif "multiplePaths" in filename:
         return (int)(((domain_size) * (domain_size + 1)) * 0.5)
     elif "barabasiAlbert" in filename:
-        import itertools
-        with open(filename, "r") as file:
-            lines = itertools.dropwhile(lambda line: "(:action del-all" not in line, file)
-            _, pre = next(lines), next(lines)
-            facts = re.findall(r'\(f\d+\)', pre)
-            # negative_facts = re.findall(r'\(not \(f\d+\)\)', pre)
-            return len(facts)# - len(negative_facts)
+        return int(filename.split("-")[-1].split(".")[0])+1
+        # import itertools
+        # with open(filename, "r") as file:
+        #     lines = itertools.dropwhile(lambda line: "(:action del-all" not in line, file)
+        #     _, pre = next(lines), next(lines)
+        #     facts = re.findall(r'\(f\d+\)', pre)
+        #     # negative_facts = re.findall(r'\(not \(f\d+\)\)', pre)
+        #     return len(facts)# - len(negative_facts)
         # return (int)(filename.split("barabasiAlbert_")[1].split("-")[0])
 
 if __name__ == "__main__":
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
     [f.unlink() for f in Path(domainsFolder).glob("*") if f.is_file()]
 
-    # domainGenerator.generateDomains(domainsFolder, 10, 500+10, 10, "singlePath")
+    # domainGenerator.generateDomains(domainsFolder, 10, 500-10, 10, "singlePath")
     # domainGenerator.generateDomains(domainsFolder, 1, 36, 1, "multiplePaths")
     # domainGenerator.generateDomains(domainsFolder, 1, 36, 1, "multiplePathsDeadEnds")
     domainGenerator.generateDomains(domainsFolder, -1, -1, -1, "barabasiAlbert")
