@@ -75,7 +75,7 @@ if __name__ == "__main__":
     base_params = (1, 2, 4, 2)
 
     for i in [x / 10.0 for x in range(10, 30)]:
-        # TODO asp-simple and asp-general encodings become UNSATISFIABLE from some point onwards, e.g. asp-simple with 2 4 8 4
+        # TODO asp-simple and asp-general encodings become UNSATISFIABLE as soon as num_plans_success > 1; probably related to the pre-goal action requiring "and" instead of "or" in the precondition
         # increase all parameters by 10 percent each step 
         domainGenerator.generateGeneralApproachDomain(domains_folder, int(base_params[0] * i) ,  int(base_params[1] * i),  int(base_params[2] * i), int(base_params[3] * i))
 
