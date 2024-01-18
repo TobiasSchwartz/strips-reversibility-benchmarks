@@ -51,23 +51,29 @@ if __name__ == "__main__":
         # "qasp",
     ]
     domains = [
-        # "singlePath",
-        # "multiplePaths",
-        # "multiplePathsDeadEnds",
+        "singlePath",
+        "multiplePaths",
+        "multiplePathsDeadEnds",
         "barabasiAlbertLongestShortestPath",
         "barabasiAlbertDegree",
     ]
     domainsFolder = "domains"
 
-    # Barabasi-Albert model parameters
+    # Parameters for standard domain 
+    start = 10
+    limit = 50
+    step = 10
+
+    # Parameters for Barabasi-Albert domains
     n = 100
     m = 50 
 
     [f.unlink() for f in Path(domainsFolder).glob("*") if f.is_file()]
 
-    # domainGenerator.generateStandardDomains(domainsFolder, 10, 500-10, 10, "singlePath")
-    # domainGenerator.generateStandardDomains(domainsFolder, 1, 36, 1, "multiplePaths")
-    # domainGenerator.generateStandardDomains(domainsFolder, 1, 36, 1, "multiplePathsDeadEnds")
+    # Generate all domains for the experiments
+    domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "singlePath")
+    domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "multiplePaths")
+    domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "multiplePathsDeadEnds")
     domainGenerator.generateBarabasiAlbertDomains(domainsFolder, n, m, "barabasiAlbertLongestShortestPath")
     domainGenerator.generateBarabasiAlbertDomains(domainsFolder, n, m, "barabasiAlbertDegree")
 
@@ -88,7 +94,6 @@ if __name__ == "__main__":
 
             if approach == "bfs" and domain =="multiplePaths" and int(csvIvalue) > 15:
                 continue
-
 
             print(f"***************** Processing {path} using {approach} approach *****************\n")
             horizon = horizonForDomainFileName(path)

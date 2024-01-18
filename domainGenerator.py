@@ -279,10 +279,6 @@ def barabasiAlbertLongestShortestPath(m, n):
 
         yield (f"barabasiAlbertLongestShortestPath{m}-{n}-{node_a}-{node_b}", domain)
 
-        # nx.draw(G, with_labels=True)
-        # plt.savefig("graph_visualization.png", format="png")
-        # nx.draw(G)
-        # break
 
 def barabasiAlbertDegree(m, n):
     """
@@ -346,11 +342,6 @@ def barabasiAlbertDegree(m, n):
         """
 
         yield (f"barabasiAlbertDegree{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
-
-        # nx.draw(G, with_labels=True)
-        # plt.savefig("graph_visualization.png", format="png")
-        # nx.draw(G)
-        # break
 
 
 def generateStandardDomains(folder, start, limit, step, domain):
@@ -435,4 +426,4 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     
 if __name__ == "__main__":
     import fire
-    fire.Fire(generateDomains)
+    fire.Fire(generateStandardDomains, generateBarabasiAlbertDomains)
