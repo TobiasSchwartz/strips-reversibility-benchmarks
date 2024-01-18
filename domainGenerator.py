@@ -238,6 +238,7 @@ def barabasiAlbertLongestShortestPath(m, n):
 
     for path in longest_shortest_paths:
 
+        path_length = len(path) - 1
         node_a = path[0]
         node_b = path[-1]
 
@@ -246,7 +247,6 @@ def barabasiAlbertLongestShortestPath(m, n):
 
         predicates = [f"(f{j})" for j in G.nodes]
         path_predicates = [f"(f{p})" for p in path]
-        neg_path_predicates = [f"(not {p})" for p in path_predicates]
 
         not_predicates = [f"(not {p})" for p in predicates]
 
@@ -261,7 +261,7 @@ def barabasiAlbertLongestShortestPath(m, n):
         # + [f"(not {p})" for p in predicates if p not in path_predicates])})
 
         domain = f"""
-        (define (domain barabasiAlbert_{m}-{n}-{node_a}-{node_b})
+        (define (domain barabasiAlbert_{m}-{n}-{node_a}-{node_b}-{path_length})
         (:requirements :strips :negative-preconditions)
         (:predicates {" ".join(predicates)})
 
@@ -277,7 +277,7 @@ def barabasiAlbertLongestShortestPath(m, n):
         )
         """
 
-        yield (f"barabasiAlbertLongestShortestPath{m}-{n}-{node_a}-{node_b}", domain)
+        yield (f"barabasiAlbertLongestShortestPath{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
 
 def barabasiAlbertDegree(m, n):

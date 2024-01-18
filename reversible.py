@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from typing import Type
-
 from action import Action
 from PDDL import PDDL_Parser
 

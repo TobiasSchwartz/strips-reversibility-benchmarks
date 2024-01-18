@@ -22,17 +22,12 @@ def horizonForDomainFileName(filename):
     elif "multiplePaths" in filename:
         return (int)(((domain_size) * (domain_size + 1)) * 0.5)
     elif "barabasiAlbertLongestShortestPath" in filename:
-        return int(filename.split("-")[-1].split(".")[0]) + 1
+        # we do not want to enforce a maximum path length
+        return -1
     elif "barabasiAlbertDegree" in filename:
-        return int(filename.split("-")[-1].split(".")[0]) + 1
-        # import itertools
-        # with open(filename, "r") as file:
-        #     lines = itertools.dropwhile(lambda line: "(:action del-all" not in line, file)
-        #     _, pre = next(lines), next(lines)
-        #     facts = re.findall(r'\(f\d+\)', pre)
-        #     # negative_facts = re.findall(r'\(not \(f\d+\)\)', pre)
-        #     return len(facts)# - len(negative_facts)
-        # return (int)(filename.split("barabasiAlbert_")[1].split("-")[0])
+        # we do not want to enforce a maximum path length
+        return -1
+    
 
 if __name__ == "__main__":
     import benchmark
@@ -80,15 +75,19 @@ if __name__ == "__main__":
     # n >> m -> dfs usually faster than bfs
     domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertLongestShortestPath")
 
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 1000, 999, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 1000, 500, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 1000, 50, "barabasiAlbertLongestShortestPath")
+
     # Generate domains using Barabasi-Albert Degree method
     # n ~ m -> for some reason, no domains generated
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 199, "barabasiAlbertDegree")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 199, "barabasiAlbertDegree") 
 
     # n = 2 * m -> dfs usually faster than bfs; also not all domains generated
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 100, "barabasiAlbertDegree")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 100, "barabasiAlbertDegree")
 
     # n >> m -> dfs usually faster than bfs
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertDegree")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertDegree")
 
     time = time.time()
     Path("./experiments/").mkdir(parents=True, exist_ok=True)
