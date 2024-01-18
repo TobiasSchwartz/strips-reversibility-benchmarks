@@ -2,9 +2,8 @@
 
 import networkx as nx
 import random
-import matplotlib.pyplot as plt
 
-def general_domain_generator(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
+def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
     """
     Generates a PDDL domain with a fixed number of plans of length i leading to the same goal state,
     and a fixed number of plans of length i leading to a dead end.
@@ -13,7 +12,7 @@ def general_domain_generator(num_plans_success, length_plans_success, num_plans_
     :param length_plans_success: length of the plans leading to the goal state
     :param num_plans_dead_end: number of plans leading to a dead end
     :param length_plans_dead_end: length of the plans leading to a dead end
-    :return: the PDDL doamin in string format
+    :return: the PDDL domain in string format
     """
 
     total_states = num_plans_success * (length_plans_success-1) + num_plans_dead_end * length_plans_dead_end + 2
@@ -218,9 +217,9 @@ def multiplePathsDeadEnds(i):
 
     return domain
 
-def barabasiAlbertLongestShortestPath(m, n):
+def barabasiAlbertLongestShortestPath(n, m):
     """
-    Generates a PDDL domain based on Barabasi-Albert graphs. Multiple test instances are returned for a domain. Only the ten node pairs with highest hop distance are considered.
+    Generates ten PDDL domains based on Barabasi-Albert graph with the provided parameters. Only the ten node pairs with highest hop distance are considered.
 
     :param i: length of the single reverse plan
     :return: the PDDL domain in string format
@@ -228,7 +227,7 @@ def barabasiAlbertLongestShortestPath(m, n):
 
     seed = random.seed(246)
 
-    G = nx.barabasi_albert_graph(m, n, seed=seed)
+    G = nx.barabasi_albert_graph(m=m, n=n, seed=seed)
     shortest_paths = nx.all_pairs_shortest_path(G)
     G = nx.to_directed(G)
 
@@ -246,7 +245,6 @@ def barabasiAlbertLongestShortestPath(m, n):
         node_b_pred = f"(f{node_b})"
 
         predicates = [f"(f{j})" for j in G.nodes]
-        path_predicates = [f"(f{p})" for p in path]
 
         not_predicates = [f"(not {p})" for p in predicates]
 
@@ -257,8 +255,6 @@ def barabasiAlbertLongestShortestPath(m, n):
         :precondition (f{u})
         :effect (and (f{v}) (not (f{u}))))
         """ for (u, v) in G.edges]
-
-        # + [f"(not {p})" for p in predicates if p not in path_predicates])})
 
         domain = f"""
         (define (domain barabasiAlbert_{m}-{n}-{node_a}-{node_b}-{path_length})
@@ -277,10 +273,10 @@ def barabasiAlbertLongestShortestPath(m, n):
         )
         """
 
-        yield (f"barabasiAlbertLongestShortestPath{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
+        yield (f"barabasiAlbertLongestShortestPath-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
 
-def barabasiAlbertDegree(m, n):
+def barabasiAlbertDegree(n, m):
     """
     Generates a PDDL domain based on Barabasi-Albert graphs. Multiple test instances are returned for a domain. Only the ten node pairs with highest hop distance are considered.
 
@@ -290,21 +286,21 @@ def barabasiAlbertDegree(m, n):
 
     seed = random.seed(246)
 
-    G = nx.barabasi_albert_graph(m, n, seed=seed)
+    G = nx.barabasi_albert_graph(m=m, n=n, seed=seed)
     G = nx.to_directed(G)
 
     # sort nodes by degree
     sorted_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)
 
     # start at most connected node
-    noda_a = sorted_nodes[0][0]
+    node_a = sorted_nodes[0][0]
     
     node_pairs = []
     for i in range(1, len(sorted_nodes)):
         node_b = sorted_nodes[i][0]
-        shortest_path_length = nx.shortest_path_length(G, noda_a, node_b)
+        shortest_path_length = nx.shortest_path_length(G, node_a, node_b)
         if shortest_path_length > 1:
-            node_pairs.append((noda_a, node_b, shortest_path_length))
+            node_pairs.append((node_a, node_b, shortest_path_length))
             if len(node_pairs) == 10:
                 break
 
@@ -341,7 +337,7 @@ def barabasiAlbertDegree(m, n):
         )
         """
 
-        yield (f"barabasiAlbertDegree{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
+        yield (f"barabasiAlbertDegree-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
 
 def generateStandardDomains(folder, start, limit, step, domain):
@@ -382,16 +378,43 @@ def generateStandardDomains(folder, start, limit, step, domain):
         print(f"and saved as file \"{filename}\"", end="")
         print("")
 
+
+def generateGeneralApproachDomain(folder, num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
+    """
+    Generates a domain based on the general approach for generating domains.
+
+    :param num_plans_success: number of plans leading to the goal state
+    :param length_plans_success: length of the plans leading to the goal state
+    :param num_plans_dead_end: number of plans leading to a dead end
+    :param length_plans_dead_end: length of the plans leading to a dead end
+    """
+
+    from pathlib import Path
+    Path(folder).mkdir(parents=True, exist_ok=True)
+
+    path_length = max(length_plans_success, length_plans_dead_end)
+    domain_name = f"generalApproach-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end}-{path_length}"
+
+    print(f"Generating {domain_name} domain ... ")
+
+    domain = generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end)
+
+    filename = f"{folder}/{domain_name}.pddl"
+    with open(filename, "w") as f:
+        f.write(domain)
+        f.close()
+    print(f"and saved as file \"{filename}\"", end="")
+    print("")
+
+
 def generateBarabasiAlbertDomains(folder, n, m, domain):
     """
-    Generates domains for the specified domain name using the provided domain function following the range for the i value.
-    Start and limit specify the upper and lower bound of the argument i for the to be generated domains, step the increment at each step.
-    Currently the highest possible value for limit is 999.
+    Generates a domain based on Barabasi-Albert networks.
 
     :param folder: folder in which the PDDL domains shall be written to
     :param n: number of nodes
     :param m: number of nodes to be linked to new node with respect to p_i
-    :param domain: domain type to be created ("singlePath", "multiplePaths", "multiplePathsDeadEnds", or "barabasiAlbert")
+    :param domain: domain type to be created ("barabasiAlbertLongestShortestPath" or "barabasiAlbertDegree")
     """
 
     from pathlib import Path
@@ -426,4 +449,4 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     
 if __name__ == "__main__":
     import fire
-    fire.Fire(generateStandardDomains, generateBarabasiAlbertDomains)
+    fire.Fire(generateStandardDomains, generateGeneralApproachDomain, generateBarabasiAlbertDomains)

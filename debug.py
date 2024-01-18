@@ -20,7 +20,7 @@ num_plans_dead_end = 31
 print(f"num_plans_dead_end: {num_plans_dead_end}")
 length_plans_dead_end = 5
 print(f"length_plans_dead_end: {length_plans_dead_end}")
-domainString = domainGenerator.general_domain_generator(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end)
+domainString = domainGenerator.generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end)
 
 # if file already exists, skip
 domainFileName = "debug.pddl"

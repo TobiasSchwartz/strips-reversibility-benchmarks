@@ -7,6 +7,8 @@ def domainFromDomainFileName(filename):
         return "multiplePathsDeadEnds"
     elif "multiplePaths" in filename:
         return "multiplePaths"
+    elif "generalApproach" in filename:
+        return "multiplePaths"
     elif "barabasiAlbertLongestShortestPath" in filename:
         return "barabasiAlbertLongestShortestPath"
     elif "barabasiAlbertDegree" in filename:
@@ -21,12 +23,12 @@ def horizonForDomainFileName(filename):
         return (int)(((domain_size) * (domain_size + 1)) * 0.5)
     elif "multiplePaths" in filename:
         return (int)(((domain_size) * (domain_size + 1)) * 0.5)
+    elif "generalApproach" in filename:
+        return int(filename.split("-")[-1].split(".")[0]) + 1
     elif "barabasiAlbertLongestShortestPath" in filename:
-        # we do not want to enforce a maximum path length
-        return -1
+        return int(filename.split("-")[-1].split(".")[0]) + 1
     elif "barabasiAlbertDegree" in filename:
-        # we do not want to enforce a maximum path length
-        return -1
+        return int(filename.split("-")[-1].split(".")[0]) + 1
     
 
 if __name__ == "__main__":
@@ -42,13 +44,14 @@ if __name__ == "__main__":
     approaches = [
         "dfs",
         "bfs",
-        # "asp",
-        # "qasp",
+        "asp",
+        "qasp",
     ]
     domains = [
         "singlePath",
         "multiplePaths",
         "multiplePathsDeadEnds",
+        "generalApproach",
         "barabasiAlbertLongestShortestPath",
         "barabasiAlbertDegree",
     ]
@@ -67,17 +70,20 @@ if __name__ == "__main__":
 
     # Generate domains using Barabasi-Albert Longest Shortest Path method
     # n ~ m -> sometimes bfs, sometimes dfs faster
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 199, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 199, "barabasiAlbertLongestShortestPath")
 
     # n = 2 * m -> dfs has many timeouts; bfs usually faster than dfs
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 100, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 100, "barabasiAlbertLongestShortestPath")
 
     # n >> m -> dfs usually faster than bfs
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertLongestShortestPath")
 
     # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 1000, 999, "barabasiAlbertLongestShortestPath")
     # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 1000, 500, "barabasiAlbertLongestShortestPath")
     # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 1000, 50, "barabasiAlbertLongestShortestPath")
+
+    # Generate domains based on the general approach
+    domainGenerator.generateGeneralApproachDomain(domainsFolder, 2, 2, 31, 5)
 
     # Generate domains using Barabasi-Albert Degree method
     # n ~ m -> for some reason, no domains generated
@@ -107,8 +113,15 @@ if __name__ == "__main__":
             if approach == "bfs" and domain =="multiplePaths" and int(csvIvalue) > 15:
                 continue
 
+            # we do not want to give our approaches an edge by aborting early
+            # only asp and qasp should know the horizon
+            if approach == "asp" or approach == "qasp":
+                horizon = horizonForDomainFileName(path)
+            else:
+                horizon = -1
+
             print(f"***************** Processing {path} using {approach} approach *****************\n")
-            horizon = horizonForDomainFileName(path)
+
             print(f"Horizon = {horizon}\n")
             (domainPath, approach, reversibleActionName, horizon, timeoutLimit, wallClock, setSize) = benchmark.benchmark(
                 approach, path, "del-all", horizon, timeout
