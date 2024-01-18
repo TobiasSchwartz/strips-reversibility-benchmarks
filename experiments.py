@@ -59,23 +59,36 @@ if __name__ == "__main__":
     ]
     domainsFolder = "domains"
 
-    # Parameters for standard domain 
-    start = 10
-    limit = 50
-    step = 10
-
-    # Parameters for Barabasi-Albert domains
-    n = 100
-    m = 50 
-
     [f.unlink() for f in Path(domainsFolder).glob("*") if f.is_file()]
 
-    # Generate all domains for the experiments
-    domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "singlePath")
-    domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "multiplePaths")
-    domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "multiplePathsDeadEnds")
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, n, m, "barabasiAlbertLongestShortestPath")
-    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, n, m, "barabasiAlbertDegree")
+    # Generate singlePath, multiplePaths, multiplePathsDeadEnds, domains
+    # start = 10
+    # limit = 50
+    # step = 10
+
+    # domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "singlePath")
+    # domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "multiplePaths")
+    # domainGenerator.generateStandardDomains(domainsFolder, start, limit, step, "multiplePathsDeadEnds")
+
+    # Generate domains using Barabasi-Albert Longest Shortest Path method
+    # n ~ m -> sometimes bfs, sometimes dfs faster
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 199, "barabasiAlbertLongestShortestPath")
+
+    # n = 2 * m -> dfs has many timeouts; bfs usually faster than dfs
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 100, "barabasiAlbertLongestShortestPath")
+
+    # n >> m -> dfs usually faster than bfs
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertLongestShortestPath")
+
+    # Generate domains using Barabasi-Albert Degree method
+    # n ~ m -> for some reason, no domains generated
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 199, "barabasiAlbertDegree")
+
+    # n = 2 * m -> dfs usually faster than bfs; also not all domains generated
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 100, "barabasiAlbertDegree")
+
+    # n >> m -> dfs usually faster than bfs
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertDegree")
 
     time = time.time()
     Path("./experiments/").mkdir(parents=True, exist_ok=True)
