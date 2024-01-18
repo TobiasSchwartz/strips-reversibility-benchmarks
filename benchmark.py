@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import subprocess
-import math
-import time 
 import re
 
 def eval_domain_theirs(filename, horizon, timeoutLimit):
@@ -105,4 +103,3 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
 if __name__ == "__main__":
     import fire
     fire.Fire(benchmark)
-    

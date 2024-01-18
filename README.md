@@ -23,9 +23,9 @@
 In planning, the reversibility of actions deals with the question whether the effects of an action can be undone using a reverse plan. This repository provides a prototypical implementation (see [`reversible.py`](reversible.py)) of the action reversibility algorithm proposed by 
 M. Morak, L. Chrpa, W. Faber, and D. Fiser in their paper "On the reversibility of actions in planning" (KR 2020) using a depth-first search (`dfs`) and breadth-first search (`bfs`) strategy. This implementation is evaluated following the PDDL domain generator approach of L. Chrpa, W. Faber, D. Fiser, and M. Morak, which they proposed and used in their paper "Determining action reversibility in STRIPS using answer set programming" (ICLP 2020) to evaluate the performance of their answer set programming (`asp`) and (`qasp`) based implementations.
 
-We extend their domain generator template (`singlePath`) to a `multiplePaths` and `multiplePathsDeadEnds` template and add a completely new domain generator based on the Barabási–Albert model (see [`domainGenerator.py`](domainGenerator.py)). The produced benchmarks (see [`benchmark.py`](benchmark.py)) reveal that even slight changes in the `singlePath`, `multiplePaths` and `multiplePathsDeadEnds` domain generator templates suffice to introduce a radical bias that either favors the `bfs`, `dfs`, or `asp` approach. Hence, care must be taken when evaluating algorithms for action reversibility using PDDL domains obtained from domain generators.
+We extended their domain generator template (`singlePath`) to a `multiplePaths` and `multiplePathsDeadEnds` template but also added completely new domain generators: one based on a general approach for domain generation (`generalApproach`) and two others (`barabasiAlbertLongestShortestPath`, `barabasiAlbertLongestDegree`) based on the Barabási–Albert model (see [`domainGenerator.py`](domainGenerator.py)).
 
-Using the Barabási–Albert domain generator, more representative domains with diverse characteristics can be created that might serve as a basis for a future action reversibility benchmark.
+The produced benchmarks (see [`benchmark.py`](benchmark.py)) reveal that even slightly changed parameters in the `singlePath`, `multiplePaths` and `multiplePathsDeadEnds` domain generator templates suffice to introduce a radical bias that either favors the `bfs`, `dfs`, or `asp` approach. Hence, care must be taken when evaluating algorithms for action reversibility using PDDL domains obtained from domain generators. Using the `generalApproach`, `barabasiAlbertLongestShortestPath`, and `barabasiAlbertLongestDegree` domain generators, more sophisticated domains with diverse characteristics can be created that might serve as a basis for a future action reversibility benchmark.
 
 ## Setup
 
@@ -35,15 +35,16 @@ We provide a [`Dockerfile`](Dockerfile) and [`docker-compose.yml`](docker-compos
 
 We use [google/python-fire](https://github.com/google/python-fire) to automatically generate command line interfaces (CLIs) for the following python scripts:
 
-- [`reversible.py`](reversible.py) to search for reverse plans of an action in a PDDL domain
-- [`domainGenerator.py`](domainGenerator.py) to generate PDDL domains following the `singlePath`, `multiplePaths`, or `multiplePathsDeadEnds` template
-- [`benchmark.py`](benchmark.py) to obtain the performance of a reverse plan search
+- [`reversible.py`](./reversible.py) to search for reverse plans of an action in a PDDL domain
+- [`domainGenerator.py`](./domainGenerator.py) to generate PDDL domains
+- [`benchmark.py`](./benchmark.py) to obtain the performance of a reverse plan search
+- [`experiments.py`](./experiments.py) to run the full experiments pipeline
 
-Run `python3 ./<script> --help` where `<script>` is one of the three provided python scripts to obtain information on required command line arguments.
+Run `python3 ./<script> --help` where `<script>` is one of the provided python scripts to obtain information on required command line arguments.
 
 ## Experiments
 
-To reproduce the results from our papers, execute the [`experiments.py`](experiments.py) script from within the docker container via `python3 ./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`, `barabasiAlbertLongestShortestPath`, `barabasiAlbertDegree`) combination.
+To reproduce the results from our papers, execute the [`experiments.py`](experiments.py) script from within the docker container via `python3 ./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp`, `qasp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`, `generalApproach`, `barabasiAlbertLongestShortestPath`, `barabasiAlbertDegree`) combination.
 
 ## Further Examples
 

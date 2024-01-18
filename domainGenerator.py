@@ -3,100 +3,6 @@
 import networkx as nx
 import random
 
-def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
-    """
-    Generates a PDDL domain with a fixed number of plans of length i leading to the same goal state,
-    and a fixed number of plans of length i leading to a dead end.
-
-    :param num_plans_success: number of plans leading to the goal state
-    :param length_plans_success: length of the plans leading to the goal state
-    :param num_plans_dead_end: number of plans leading to a dead end
-    :param length_plans_dead_end: length of the plans leading to a dead end
-    :return: the PDDL domain in string format
-    """
-
-    total_states = num_plans_success * (length_plans_success-1) + num_plans_dead_end * length_plans_dead_end + 2
-    print(f"total_states: {total_states}")
-
-    predicates = [f"(f{j})" for j in range(0, total_states)]
-
-    not_predicates = [f"(not {p})" for p in predicates]
-
-    newline = "\n"
-
-    goal = f"(f{total_states-1})"
-    next_state = 1
-    to_goal = []
-
-    # first generate all plans leading to the goal state
-    actions = []
-
-    for _ in range(num_plans_success):#
-        # :effect (and (f{next_state}) (not (f0)))
-        actions.append(f"""
-    (:action add-f0-f{next_state}
-    :precondition (f0)
-    :effect (and (f{next_state})))
-        """)
-
-        for _ in range(1,length_plans_success-1):
-            next_state += 1
-            # (not (f{next_state-1}))
-            actions.append(f"""
-    (:action add-f{next_state-1}-f{next_state}
-    :precondition (f{next_state-1})
-    :effect (and (f{next_state})))
-            """)
-
-        actions.append(f"""
-    (:action add-f{next_state}-goal
-    :precondition (f{next_state})
-    :effect (and {goal} (not (f{next_state}))))
-        """)
-        to_goal.append(f"(f{next_state})")
-        next_state += 1
-
-    # then generate all plans leading to a dead end
-    for _ in range(num_plans_dead_end):
-        actions.append(f"""
-    (:action add-f0-f{next_state}
-    :precondition (f0)
-    :effect (and (f{next_state}) ))
-        """)
-
-        for _ in range(1,length_plans_dead_end):
-            next_state += 1
-            # (not (f{next_state-1}))
-            actions.append(f"""
-    (:action add-f{next_state-1}-f{next_state}
-    :precondition (f{next_state-1})
-    :effect (and (f{next_state})))
-            """)
-        next_state += 1
-
-    # (:action add-f0
-    # :effect (f0))
-
-    domain = f"""
-    (define (domain benchmark-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end})
-    (:requirements :strips)
-    (:predicates {" ".join(predicates)})
-
-    (:action del-all
-    :precondition (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])})
-    :effect (and (f0) {" ".join([p for p in not_predicates if p != "(not (f0))"])}))
-
-    (:action pre-goal
-    :precondition (and {" ".join(to_goal)})
-    :effect (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])}))
-
-    {newline.join(actions)}
-    )
-    """
-
-    return domain
-
-# {" ".join([f"(not {p})" for p in predicates if p != goal])}
 
 def singlePath(i):
     """
@@ -216,6 +122,96 @@ def multiplePathsDeadEnds(i):
     """
 
     return domain
+
+
+def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
+    """
+    Generates a PDDL domain with a fixed number of plans of length i leading to the same goal state,
+    and a fixed number of plans of length i leading to a dead end.
+
+    :param num_plans_success: number of plans leading to the goal state
+    :param length_plans_success: length of the plans leading to the goal state
+    :param num_plans_dead_end: number of plans leading to a dead end
+    :param length_plans_dead_end: length of the plans leading to a dead end
+    :return: the PDDL domain in string format
+    """
+
+    total_states = num_plans_success * (length_plans_success-1) + num_plans_dead_end * length_plans_dead_end + 2
+    print(f"total_states: {total_states}")
+
+    predicates = [f"(f{j})" for j in range(0, total_states)]
+
+    not_predicates = [f"(not {p})" for p in predicates]
+
+    newline = "\n"
+
+    goal = f"(f{total_states-1})"
+    next_state = 1
+    to_goal = []
+
+    # first generate all plans leading to the goal state
+    actions = []
+
+    for _ in range(num_plans_success):
+        actions.append(f"""
+    (:action add-f0-f{next_state}
+    :precondition (f0)
+    :effect (and (f{next_state})))
+        """)
+
+        for _ in range(1,length_plans_success-1):
+            next_state += 1
+            actions.append(f"""
+    (:action add-f{next_state-1}-f{next_state}
+    :precondition (f{next_state-1})
+    :effect (and (f{next_state})))
+            """)
+
+        actions.append(f"""
+    (:action add-f{next_state}-goal
+    :precondition (f{next_state})
+    :effect (and {goal} (not (f{next_state}))))
+        """)
+        to_goal.append(f"(f{next_state})")
+        next_state += 1
+
+    # then generate all plans leading to a dead end
+    for _ in range(num_plans_dead_end):
+        actions.append(f"""
+    (:action add-f0-f{next_state}
+    :precondition (f0)
+    :effect (and (f{next_state}) ))
+        """)
+
+        for _ in range(1,length_plans_dead_end):
+            next_state += 1
+            # (not (f{next_state-1}))
+            actions.append(f"""
+    (:action add-f{next_state-1}-f{next_state}
+    :precondition (f{next_state-1})
+    :effect (and (f{next_state})))
+            """)
+        next_state += 1
+
+    domain = f"""
+    (define (domain benchmark-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end})
+    (:requirements :strips)
+    (:predicates {" ".join(predicates)})
+
+    (:action del-all
+    :precondition (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])})
+    :effect (and (f0) {" ".join([p for p in not_predicates if p != "(not (f0))"])}))
+
+    (:action pre-goal
+    :precondition (and {" ".join(to_goal)})
+    :effect (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])}))
+
+    {newline.join(actions)}
+    )
+    """
+
+    return domain
+
 
 def barabasiAlbertLongestShortestPath(n, m):
     """
@@ -356,7 +352,6 @@ def generateStandardDomains(folder, start, limit, step, domain):
     from pathlib import Path
     Path(folder).mkdir(parents=True, exist_ok=True)
 
-    # generate singlePath, multiplePath, and multiplePathsDeadEnds domains
     if limit >= 1000:
         print("The limit is only supported up to a value of 999.")
         return
@@ -409,7 +404,7 @@ def generateGeneralApproachDomain(folder, num_plans_success, length_plans_succes
 
 def generateBarabasiAlbertDomains(folder, n, m, domain):
     """
-    Generates a domain based on Barabasi-Albert networks.
+    Generates domains based on Barabasi-Albert networks.
 
     :param folder: folder in which the PDDL domains shall be written to
     :param n: number of nodes
