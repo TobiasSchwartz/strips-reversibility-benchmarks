@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-def domainFromDomainFileName(filename):
+def domainTypeFromDomainFileName(filename):
     if "singlePath" in filename:
         return "singlePath"
     elif "multiplePathsDeadEnds" in filename:
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         # "qasp",
     ]
 
-    domains = [
+    domain_types = [
         # "singlePath",
         "multiplePaths",
         # "multiplePathsDeadEnds",
@@ -57,36 +57,36 @@ if __name__ == "__main__":
         # "barabasiAlbertDegree",
     ]
 
-    domainsFolder = "domains"
+    domains_folder = "domains"
 
-    [f.unlink() for f in Path(domainsFolder).glob("*") if f.is_file()]
+    [f.unlink() for f in Path(domains_folder).glob("*") if f.is_file()]
 
     # Generate singlePath, multiplePaths, multiplePathsDeadEnds, domains
-    # domainGenerator.generateStandardDomains(domainsFolder, 10, 500, 10, "singlePath")
-    domainGenerator.generateStandardDomains(domainsFolder, 1, 50, 1, "multiplePaths")
-    # domainGenerator.generateStandardDomains(domainsFolder, 1, 50, 1, "multiplePathsDeadEnds")
+    # domainGenerator.generateStandardDomains(domains_folder, 10, 500, 10, "singlePath")
+    domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePaths")
+    # domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePathsDeadEnds")
 
     # Generate domains based on the general approach
-    domainGenerator.generateGeneralApproachDomain(domainsFolder, 2, 2, 30, 5)
+    domainGenerator.generateGeneralApproachDomain(domains_folder, 2, 2, 30, 5)
 
     # Generate domains using Barabasi-Albert Longest Shortest Path method
     # n ~ m -> sometimes bfs, sometimes dfs faster
-    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 199, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 199, "barabasiAlbertLongestShortestPath")
 
     # n = 2 * m -> dfs has many timeouts; bfs usually faster than dfs
-    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 100, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 100, "barabasiAlbertLongestShortestPath")
 
     # n >> m -> dfs usually faster than bfs
-    # domainGenerator.generateBarabasiAlbertDomains(domainsFolder, 200, 10, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 10, "barabasiAlbertLongestShortestPath")
 
     time = time.time()
     Path("./experiments/").mkdir(parents=True, exist_ok=True)
     for approach in approaches:
-        for domain in domains:
-            with open(f"./experiments/experiment-{domain}-{approach}-{time}.csv", "a+") as f:
+        for domain_type in domain_types:
+            with open(f"./experiments/experiment-{domain_type}-{approach}-{time}.csv", "a+") as f:
                 f.write("approach,domain,generatorArgument,path,runtimeInseconds,setSizeInmb\n")
 
-    pathlist = Path(f"./{domainsFolder}/").glob(f'*.pddl')
+    pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
     for path in pathlist:
         path = str(path)
@@ -95,20 +95,20 @@ if __name__ == "__main__":
             
             print(f"***************** Processing {path} using {approach} approach *****************\n")
 
-            domain = domainFromDomainFileName(path)
-            resultFilePath = f"./experiments/experiment-{domain}-{approach}-{time}.csv"
+            domain_type = domainTypeFromDomainFileName(path)
+            result_file_path = f"./experiments/experiment-{domain_type}-{approach}-{time}.csv"
 
             # skip domain if it is commented out
-            if domain not in domains:
+            if domain_type not in domain_types:
                 print("Skipped because domain type is commented out!")
                 continue
             
             # skip domain if run on previous domain already timed out
             # Attention: use only for singlePath, multiplePath, and multiplePathsDeadEnds, as only these will definitely become more difficult
-            if domain == "multiplePaths" or domain == "multiplePaths" or domain == "multiplePaths":
-                with open(resultFilePath) as f:
+            if domain_type == "multiplePaths" or domain_type == "multiplePaths" or domain_type == "multiplePaths":
+                with open(result_file_path) as f:
                     if ",-1," in f.readlines()[-1]:
-                        print("Skipped because run with previous domain timed out!")
+                        print("Skipped because run with previous domain of this type timed out!")
                         continue
 
             # we do not want to give our approaches an edge by aborting early
@@ -119,19 +119,23 @@ if __name__ == "__main__":
                 horizon = -1
 
             print(f"Horizon = {horizon}\n")
-            (domainPath, approach, reversibleActionName, horizon, timeoutLimit, wallClock, setSize) = benchmark.benchmark(
+            (domain_path, approach, reversible_action_name, horizon, timeout_limit, wall_clock, set_size) = benchmark.benchmark(
                 approach, path, "del-all", horizon, timeout
             )
 
-            if type(wallClock) == str:
-                strptime = datetime.datetime.strptime(wallClock, r'%M:%S.%f')
-                csvRuntime = (strptime.minute * 60) + strptime.second + \
+            if type(wall_clock) == str:
+                strptime = datetime.datetime.strptime(wall_clock, r'%M:%S.%f')
+                csv_runtime = (strptime.minute * 60) + strptime.second + \
                     (strptime.microsecond / 1000000)
             else:
-                csvRuntime = -1
-            csvSetSize = int(setSize) / 1024
-            csvIvalue = re.sub('[^0-9]', '', path)
+                csv_runtime = -1
+            csv_set_size = int(set_size) / 1024
+
+            if domain_type == "multiplePaths" or domain_type == "multiplePaths" or domain_type == "multiplePaths":
+                csv_i_value = re.sub('[^0-9]', '', path)
+            else:
+                csv_i_value = "not applicable"
 
             # append results
-            with open(resultFilePath, "a+") as f:
-                f.write(f"{approach},{domain},{csvIvalue},{path},{csvRuntime},{csvSetSize}\n")
+            with open(result_file_path, "a+") as f:
+                f.write(f"{approach},{domain_type},{csv_i_value},{path},{csv_runtime},{csv_set_size}\n")
