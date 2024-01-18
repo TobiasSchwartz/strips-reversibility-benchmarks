@@ -37,9 +37,13 @@ We use [google/python-fire](https://github.com/google/python-fire) to automatica
 
 Run `python3 ./<script> --help` where `<script>` is one of the three provided python scripts to obtain information on required command line arguments.
 
-## Examples
+## Experiments
 
-Generate a single PDDL domain using the `singlePath` template with argument value `100`
+To reproduce the results from our paper, execute the [`experiments.py`](experiments.py) script from within the docker container via `python3 ./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`, `barabasiAlbertLongestShortestPath`, `barabasiAlbertDegree`) combination.
+
+## Further Examples
+
+Generate a single PDDL domain using the `singlePath` template
 ```
 root@f0606f1aec12:/reversibility# python3 ./domainGenerator.py domains 5 5 1 singlePath
 Generating singlePath domain for input i = 5 ... done ... and saved as file "domains/singlePath_d005.pddl"
@@ -73,7 +77,3 @@ Calls        : 1
 Time         : 0.007s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
 CPU Time     : 0.004s
 ```
-
-## Experiments
-
-Execute the [`experiments.py`](experiments.py) script from within the docker container via `python3 ./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`) combination.

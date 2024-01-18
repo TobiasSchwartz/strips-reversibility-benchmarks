@@ -7,8 +7,10 @@ def domainFromDomainFileName(filename):
         return "multiplePathsDeadEnds"
     elif "multiplePaths" in filename:
         return "multiplePaths"
-    elif "barabasiAlbert" in filename:
-        return "barabasiAlbert"
+    elif "barabasiAlbertLongestShortestPath" in filename:
+        return "barabasiAlbertLongestShortestPath"
+    elif "barabasiAlbertDegree" in filename:
+        return "barabasiAlbertDegree"
 
 def horizonForDomainFileName(filename):
     domain_size = int(re.sub('[^0-9]', '', str(filename)))
@@ -19,8 +21,10 @@ def horizonForDomainFileName(filename):
         return (int)(((domain_size) * (domain_size + 1)) * 0.5)
     elif "multiplePaths" in filename:
         return (int)(((domain_size) * (domain_size + 1)) * 0.5)
-    elif "barabasiAlbert" in filename:
-        return int(filename.split("-")[-1].split(".")[0])+1
+    elif "barabasiAlbertLongestShortestPath" in filename:
+        return int(filename.split("-")[-1].split(".")[0]) + 1
+    elif "barabasiAlbertDegree" in filename:
+        return int(filename.split("-")[-1].split(".")[0]) + 1
         # import itertools
         # with open(filename, "r") as file:
         #     lines = itertools.dropwhile(lambda line: "(:action del-all" not in line, file)
@@ -43,23 +47,29 @@ if __name__ == "__main__":
     approaches = [
         "dfs",
         "bfs",
-        "asp",
+        # "asp",
         # "qasp",
     ]
     domains = [
         # "singlePath",
         # "multiplePaths",
         # "multiplePathsDeadEnds",
-        "barabasiAlbert"
+        "barabasiAlbertLongestShortestPath",
+        "barabasiAlbertDegree",
     ]
     domainsFolder = "domains"
 
+    # Barabasi-Albert model parameters
+    n = 100
+    m = 50 
+
     [f.unlink() for f in Path(domainsFolder).glob("*") if f.is_file()]
 
-    # domainGenerator.generateDomains(domainsFolder, 10, 500-10, 10, "singlePath")
-    # domainGenerator.generateDomains(domainsFolder, 1, 36, 1, "multiplePaths")
-    # domainGenerator.generateDomains(domainsFolder, 1, 36, 1, "multiplePathsDeadEnds")
-    domainGenerator.generateDomains(domainsFolder, -1, -1, -1, "barabasiAlbert")
+    # domainGenerator.generateStandardDomains(domainsFolder, 10, 500-10, 10, "singlePath")
+    # domainGenerator.generateStandardDomains(domainsFolder, 1, 36, 1, "multiplePaths")
+    # domainGenerator.generateStandardDomains(domainsFolder, 1, 36, 1, "multiplePathsDeadEnds")
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, n, m, "barabasiAlbertLongestShortestPath")
+    domainGenerator.generateBarabasiAlbertDomains(domainsFolder, n, m, "barabasiAlbertDegree")
 
     time = time.time()
     Path("./experiments/").mkdir(parents=True, exist_ok=True)

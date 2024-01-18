@@ -228,8 +228,6 @@ def barabasiAlbertLongestShortestPath(m, n):
 
     seed = random.seed(246)
 
-    from itertools import combinations
-
     G = nx.barabasi_albert_graph(m, n, seed=seed)
     shortest_paths = nx.all_pairs_shortest_path(G)
     G = nx.to_directed(G)
@@ -279,14 +277,14 @@ def barabasiAlbertLongestShortestPath(m, n):
         )
         """
 
-        yield (f"barabasiAlbert_{m}-{n}-{node_a}-{node_b}", domain)
+        yield (f"barabasiAlbertLongestShortestPath{m}-{n}-{node_a}-{node_b}", domain)
 
         # nx.draw(G, with_labels=True)
         # plt.savefig("graph_visualization.png", format="png")
         # nx.draw(G)
         # break
 
-def barabasiAlbert(m, n):
+def barabasiAlbertDegree(m, n):
     """
     Generates a PDDL domain based on Barabasi-Albert graphs. Multiple test instances are returned for a domain. Only the ten node pairs with highest hop distance are considered.
 
@@ -295,8 +293,6 @@ def barabasiAlbert(m, n):
     """
 
     seed = random.seed(246)
-
-    from itertools import combinations
 
     G = nx.barabasi_albert_graph(m, n, seed=seed)
     G = nx.to_directed(G)
@@ -349,7 +345,7 @@ def barabasiAlbert(m, n):
         )
         """
 
-        yield (f"barabasiAlbert_{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
+        yield (f"barabasiAlbertDegree{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
         # nx.draw(G, with_labels=True)
         # plt.savefig("graph_visualization.png", format="png")
@@ -357,7 +353,7 @@ def barabasiAlbert(m, n):
         # break
 
 
-def generateDomains(folder, start, limit, step, domain):
+def generateStandardDomains(folder, start, limit, step, domain):
     """
     Generates domains for the specified domain name using the provided domain function following the range for the i value.
     Start and limit specify the upper and lower bound of the argument i for the to be generated domains, step the increment at each step.
@@ -373,11 +369,47 @@ def generateDomains(folder, start, limit, step, domain):
     from pathlib import Path
     Path(folder).mkdir(parents=True, exist_ok=True)
 
-    if domain == "barabasiAlbert":
-         # generate barabasi-albert domains (multiple test cases per domain, currently 10)
-        n, m = (100, 50)
+    # generate singlePath, multiplePath, and multiplePathsDeadEnds domains
+    if limit >= 1000:
+        print("The limit is only supported up to a value of 999.")
+        return
+    domainFunctions = [singlePath, multiplePaths, multiplePathsDeadEnds]
+    
+    if domain not in [f.__name__ for f in domainFunctions]:
+        print(f"The provided domain \"{domain}\" does not have a corresponding domain function.")
+        return
+    domainFunction = [f for f in domainFunctions if f.__name__ == domain][0]
 
-        for (test_case_name, test_case) in barabasiAlbert(n, m):
+    for i in range(start, limit+1, step):
+        print(f"Generating {domain} domain for input i = {i} ... ", end="")
+        domainString = domainFunction(i)
+        print(f"done ... ", end="")
+        filename = f"{folder}/{domain}_d{str(i).zfill(3)}.pddl"
+        with open(filename, "w") as f:
+            f.write(domainString)
+            f.close()
+        print(f"and saved as file \"{filename}\"", end="")
+        print("")
+
+def generateBarabasiAlbertDomains(folder, n, m, domain):
+    """
+    Generates domains for the specified domain name using the provided domain function following the range for the i value.
+    Start and limit specify the upper and lower bound of the argument i for the to be generated domains, step the increment at each step.
+    Currently the highest possible value for limit is 999.
+
+    :param folder: folder in which the PDDL domains shall be written to
+    :param n: number of nodes
+    :param m: number of nodes to be linked to new node with respect to p_i
+    :param domain: domain type to be created ("singlePath", "multiplePaths", "multiplePathsDeadEnds", or "barabasiAlbert")
+    """
+
+    from pathlib import Path
+    Path(folder).mkdir(parents=True, exist_ok=True)
+
+    if domain == "barabasiAlbertLongestShortestPath":
+         # generate barabasiAlbertLongestShortestPath domains (multiple test cases per domain, currently 10)
+
+        for (test_case_name, test_case) in barabasiAlbertLongestShortestPath(n, m):
             print(f"Generating {test_case_name} domain ... ")
 
             filename = f"{folder}/{test_case_name}.pddl"
@@ -387,25 +419,15 @@ def generateDomains(folder, start, limit, step, domain):
             print(f"and saved as file \"{filename}\"", end="")
             print("")
 
-    else:
-        # generate singlePath, multiplePath, and multiplePathsDeadEnds domains
-        if limit >= 1000:
-            print("The limit is only supported up to a value of 999.")
-            return
-        domainFunctions = [singlePath, multiplePaths, multiplePathsDeadEnds]
-        
-        if domain not in [f.__name__ for f in domainFunctions]:
-            print(f"The provided domain \"{domain}\" does not have a corresponding domain function.")
-            return
-        domainFunction = [f for f in domainFunctions if f.__name__ == domain][0]
+    if domain == "barabasiAlbertDegree":
+         # generate barabasiAlbertDegree domains (multiple test cases per domain, currently 2)
 
-        for i in range(start, limit+1, step):
-            print(f"Generating {domain} domain for input i = {i} ... ", end="")
-            domainString = domainFunction(i)
-            print(f"done ... ", end="")
-            filename = f"{folder}/{domain}_d{str(i).zfill(3)}.pddl"
+        for (test_case_name, test_case) in barabasiAlbertDegree(n, m):
+            print(f"Generating {test_case_name} domain ... ")
+
+            filename = f"{folder}/{test_case_name}.pddl"
             with open(filename, "w") as f:
-                f.write(domainString)
+                f.write(test_case)
                 f.close()
             print(f"and saved as file \"{filename}\"", end="")
             print("")
