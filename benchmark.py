@@ -64,7 +64,23 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
         except (TimeoutError, subprocess.TimeoutExpired):
             print(f"TimeoutError after {timeoutLimit} seconds")
             return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, -1, -1)
-    elif approach == "asp":
+        
+    elif approach == "asp-simple":
+        c1 = f"/tools/plasp translate {domainPath} > {domainPath}.lp"
+        subprocess.run(c1, text=True, capture_output=True, shell=True)
+
+        c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.simple.asp -c horizon={horizon} {domainPath}.lp"
+        try:
+            output = subprocess.run(c2, text=True, capture_output=True, shell=True, timeout=timeoutLimit)
+            print(" - ".join(output.stdout.split("\n")[4:6]))
+            wallClock = parseWallClock(output)
+            setSize = parseSetSize(output)
+            return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, wallClock, setSize)
+        except (TimeoutError, subprocess.TimeoutExpired):
+            print(f"TimeoutError after {timeoutLimit} seconds")
+            return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, -1, -1)
+        
+    elif approach == "asp-general":
         c1 = f"/tools/plasp translate {domainPath} > {domainPath}.lp"
         subprocess.run(c1, text=True, capture_output=True, shell=True)
 

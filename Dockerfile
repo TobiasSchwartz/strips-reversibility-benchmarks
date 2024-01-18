@@ -39,8 +39,9 @@ RUN wget --trust-server-names --referer https://seafile.aau.at/d/eb22aab5223f4e8
 # For QSP/ESLP encoding, see
 # https://seafile.aau.at/d/cd4cb0d65d124a619920/
 RUN wget --trust-server-names --referer https://seafile.aau.at/d/cd4cb0d65d124a619920/files/?p=/ \ 
+    'https://seafile.aau.at/d/cd4cb0d65d124a619920/files/?p=/sequential-horizon.simple.asp&dl=1'
+RUN wget --trust-server-names --referer https://seafile.aau.at/d/cd4cb0d65d124a619920/files/?p=/ \ 
     'https://seafile.aau.at/d/cd4cb0d65d124a619920/files/?p=/sequential-horizon.general.asp&dl=1'
-
 
 # download action.py and PDDL.py from github.com/pucrs-automated-planning/pddl-parser
 RUN wget https://raw.githubusercontent.com/pucrs-automated-planning/pddl-parser/581a0905b2cf3f481d84df56ac65fbb52902eddf/action.py
