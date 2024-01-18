@@ -42,18 +42,18 @@ if __name__ == "__main__":
     timeout = 60
 
     approaches = [
-        # "dfs",
+        "dfs",
         # "bfs",
-        # "asp-simple",
-        "asp-general",
+        "asp-simple",
+        # "asp-general",
         # "qasp",
     ]
 
     domain_types = [
         # "singlePath",
         # "multiplePaths",
-        "multiplePathsDeadEnds",
-        # "generalApproach",
+        # "multiplePathsDeadEnds",
+        "generalApproach",
         # "barabasiAlbertLongestShortestPath",
         # "barabasiAlbertDegree",
     ]
@@ -63,22 +63,34 @@ if __name__ == "__main__":
     [f.unlink() for f in Path(domains_folder).glob("*") if f.is_file()]
 
     # Generate singlePath, multiplePaths, multiplePathsDeadEnds, domains
-    domainGenerator.generateStandardDomains(domains_folder, 10, 500, 10, "singlePath")
-    domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePaths")
-    domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePathsDeadEnds")
+    # domainGenerator.generateStandardDomains(domains_folder, 10, 500, 10, "singlePath")
+    # domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePaths")
+    # domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePathsDeadEnds")
 
     # Generate domains based on the general approach
-    domainGenerator.generateGeneralApproachDomain(domains_folder, 2, 2, 30, 5)
+    # num_plans_success >> num_plans_dead_end -> bfs faster than dfs
+    # domainGenerator.generateGeneralApproachDomain(domains_folder, 2, 2, 50, 5)
+
+    # multiple long paths leading to the goal -> dfs faster than bfs
+    base_params = (1, 2, 4, 2)
+
+    for i in [x / 10.0 for x in range(10, 30)]:
+        # TODO asp-simple and asp-general encodings become UNSATISFIABLE from some point onwards, e.g. asp-simple with 2 4 8 4
+        # increase all parameters by 10 percent each step 
+        domainGenerator.generateGeneralApproachDomain(domains_folder, int(base_params[0] * i) ,  int(base_params[1] * i),  int(base_params[2] * i), int(base_params[3] * i))
+
+    # num_plans_success >> num_plans_dead_end -> dfs ~ bfs
+    # domainGenerator.generateGeneralApproachDomain(domains_folder, 2, 5, 5, 2)
 
     # Generate domains using Barabasi-Albert Longest Shortest Path method
     # n ~ m -> sometimes bfs, sometimes dfs faster
-    domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 199, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 199, "barabasiAlbertLongestShortestPath")
 
     # n = 2 * m -> dfs has many timeouts; bfs usually faster than dfs
-    domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 100, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 100, "barabasiAlbertLongestShortestPath")
 
     # n >> m -> dfs usually faster than bfs
-    domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 10, "barabasiAlbertLongestShortestPath")
+    # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 10, "barabasiAlbertLongestShortestPath")
 
     time = time.time()
     Path("./experiments/").mkdir(parents=True, exist_ok=True)

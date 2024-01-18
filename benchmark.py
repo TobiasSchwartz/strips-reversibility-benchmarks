@@ -72,7 +72,8 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
         c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.simple.asp -c horizon={horizon} {domainPath}.lp"
         try:
             output = subprocess.run(c2, text=True, capture_output=True, shell=True, timeout=timeoutLimit)
-            print(" - ".join(output.stdout.split("\n")[4:6]))
+            print(output.stdout)
+            # print(" - ".join(output.stdout.split("\n")[4:6]))
             wallClock = parseWallClock(output)
             setSize = parseSetSize(output)
             return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, wallClock, setSize)
