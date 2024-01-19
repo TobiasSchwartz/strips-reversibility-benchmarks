@@ -25,7 +25,7 @@ def domainTypeFromDomainFileName(filename):
 
 
 def horizonFromDomainFileName(filename):
-    domain_size = int(re.sub('[^0-9]', '', str(filename)))
+    domain_size = int(filename.split("-")[-1].split(".pddl")[0])
     domain_size += 1
     if "singlePath" in filename:
         return (int)(domain_size)
@@ -43,21 +43,21 @@ def horizonFromDomainFileName(filename):
 
 if __name__ == "__main__":
 
-    # Specifies the used approach
+    # specify the used approach
     approaches = [
-        "dfs",
-        # "bfs",
+        # "dfs",
+        "bfs",
         # "asp_simple",
         # "asp_general",
         # "qasp",
     ]
 
-    # Specifies domains of which types are created and evaluated
+    # specify domains of which types are created and evaluated
     domain_types = [
         # "singlePath",
-        # "multiplePaths",
+        "multiplePaths",
         # "multiplePathsDeadEnds",
-        "generalized",
+        # "generalized",
         # "barabasiAlbertLongestShortestPath",
         # "barabasiAlbertDegree",
     ]
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     ##### Generate singlePath domains
     if "singlePath" in domain_types:
-        domainGenerator.generateStandardDomains(domains_folder, 10, 500, 10, "singlePath")
+        domainGenerator.generateStandardDomains(domains_folder, 10, 100, 10, "singlePath")
 
     ##### Generate multiplePaths domains
     if "multiplePaths" in domain_types:
@@ -99,19 +99,11 @@ if __name__ == "__main__":
         for i in step_range:
             domainGenerator.generateGeneralizedDomain(domains_folder, 2,  4,  int(4*i), int(4*i))
 
-        # num_plans_success >> num_plans_dead_end -> bfs faster than dfs
-        # multiple long paths leading to the goal -> dfs faster than bfs
-        # num_plans_success >> num_plans_dead_end -> dfs ~ bfs
-
     #### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
         domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 199, "barabasiAlbertLongestShortestPath")
         domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 100, "barabasiAlbertLongestShortestPath")
         domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 10, "barabasiAlbertLongestShortestPath")
-
-        # n ~ m -> sometimes bfs, sometimes dfs faster
-        # n >> m -> dfs usually faster than bfs
-        # n = 2 * m -> dfs has many timeouts; bfs usually faster than dfs
 
     timestamp = time.time()
 
@@ -125,10 +117,10 @@ if __name__ == "__main__":
                     f.write("approach,domain_type,horizon,i,path,runtime_seconds,set_size_mb\n")
 
                 elif domain_type == "generalized":
-                    f.write("approach,domain_type,horizon,num_plans_success,length_plans_success,length_plans_dead_end,num_plans_dead_end,max_path_length,path,runtime_seconds,set_size_mb\n")
+                    f.write("approach,domain_type,horizon,num_plans_success,length_plans_success,length_plans_dead_end,num_plans_dead_end,domain_size,path,runtime_seconds,set_size_mb\n")
 
                 elif domain_type == "barabasiAlbertLongestShortestPath" or domain_type == "barabasiAlbertDegree":
-                    f.write("approach,domain_type,horizon,n,m,node_a,node_b,path_length,path,runtime_seconds,set_size_mb\n")
+                    f.write("approach,domain_type,horizon,n,m,node_a,node_b,domain_size,path,runtime_seconds,set_size_mb\n")
 
     #### Run experiments
     timeout = 60
@@ -140,13 +132,15 @@ if __name__ == "__main__":
         for approach in approaches:
             domain_type = domainTypeFromDomainFileName(path)
             result_file_path = f"./experiments/{domain_type}-{approach}-{timestamp}.csv"
-            
-            # # skip domain if run on previous domain already timed out
-            # # Attention: use only for singlePath, multiplePath, multiplePathsDeadEnds, and generalized as only these will definitely become more difficult
-            # if domain_type == "singlePath" or domain_type == "multiplePaths" or domain_type == "multiplePathsDeadEnds" or domain_type == "generalized":
-            #     with open(result_file_path) as f:
-            #         if ",-1," in f.readlines()[-1]:
-            #             continue
+
+            # skip domain if run on previous domain already timed out
+            # Attention: use only for singlePath, multiplePath, multiplePathsDeadEnds, and generalized as only these will definitely become more difficult
+            if domain_type == "singlePath" or domain_type == "multiplePaths" or domain_type == "multiplePathsDeadEnds":
+                with open(result_file_path) as f:
+                    # find out whether there was timeout
+                    if "-1" in f.readlines()[-1].split(",")[-2]:
+                        print("Skipped a domain due to previous timeout!")
+                        continue
 
             print(f"***************** Processing {path} using {approach} approach *****************\n")
 
