@@ -3,6 +3,14 @@
 import networkx as nx
 import random
 
+global domain_id
+domain_id = 0
+
+def generate_domain_id():
+    global domain_id
+    domain_id += 1
+
+    return str(domain_id).zfill(4)
 
 def singlePath(i):
     """
@@ -124,7 +132,7 @@ def multiplePathsDeadEnds(i):
     return domain
 
 
-def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
+def generalized(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
     """
     Generates a PDDL domain with a fixed number of plans of length i leading to the same goal state,
     and a fixed number of plans of length i leading to a dead end.
@@ -185,7 +193,6 @@ def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end,
 
         for _ in range(1,length_plans_dead_end):
             next_state += 1
-            # (not (f{next_state-1}))
             actions.append(f"""
     (:action add-f{next_state-1}-f{next_state}
     :precondition (f{next_state-1})
@@ -275,8 +282,7 @@ def barabasiAlbertLongestShortestPath(n, m):
         {newline.join(actions)}
         )
         """
-
-        yield (f"barabasiAlbertLongestShortestPath-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
+        yield (f"{generate_domain_id()}-barabasiAlbertLongestShortestPath-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
 
 def barabasiAlbertDegree(n, m):
@@ -340,7 +346,7 @@ def barabasiAlbertDegree(n, m):
         )
         """
 
-        yield (f"barabasiAlbertDegree-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
+        yield (f"{generate_domain_id()}-barabasiAlbertDegree-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
 
 def generateStandardDomains(folder, start, limit, step, domain):
@@ -353,7 +359,7 @@ def generateStandardDomains(folder, start, limit, step, domain):
     :param start: start value of argument i
     :param limit: limit of argument i
     :param step: step increment of argument i
-    :param domain: domain type to be created ("singlePath", "multiplePaths", "multiplePathsDeadEnds", or "barabasiAlbert")
+    :param domain: domain type to be created ("singlePath", "multiplePaths", or "multiplePathsDeadEnds")
     """
 
     from pathlib import Path
@@ -373,7 +379,8 @@ def generateStandardDomains(folder, start, limit, step, domain):
         print(f"Generating {domain} domain for input i = {i} ... ", end="")
         domainString = domainFunction(i)
         print(f"done ... ", end="")
-        filename = f"{folder}/{domain}_d{str(i).zfill(3)}.pddl"
+
+        filename = f"{folder}/{generate_domain_id()}-{domain}-{i}.pddl"
         with open(filename, "w") as f:
             f.write(domainString)
             f.close()
@@ -381,7 +388,7 @@ def generateStandardDomains(folder, start, limit, step, domain):
         print("")
 
 
-def generateGeneralApproachDomain(folder, num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
+def generateGeneralizedDomain(folder, num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
     """
     Generates a domain based on the general approach for generating domains.
 
@@ -395,11 +402,12 @@ def generateGeneralApproachDomain(folder, num_plans_success, length_plans_succes
     Path(folder).mkdir(parents=True, exist_ok=True)
 
     path_length = max(length_plans_success, length_plans_dead_end)
-    domain_name = f"generalApproach-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end}-{path_length}"
+
+    domain_name = f"{generate_domain_id()}-generalized-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end}-{path_length}"
 
     print(f"Generating {domain_name} domain ... ")
 
-    domain = generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end)
+    domain = generalized(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end)
 
     filename = f"{folder}/{domain_name}.pddl"
     with open(filename, "w") as f:
@@ -451,4 +459,4 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     
 if __name__ == "__main__":
     import fire
-    fire.Fire(generateStandardDomains, generateGeneralApproachDomain, generateBarabasiAlbertDomains)
+    fire.Fire(generateStandardDomains, generateGeneralizedDomain, generateBarabasiAlbertDomains)

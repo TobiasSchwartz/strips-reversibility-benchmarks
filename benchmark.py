@@ -65,7 +65,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
             print(f"TimeoutError after {timeoutLimit} seconds")
             return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, -1, -1)
         
-    elif approach == "asp-simple":
+    elif approach == "asp_simple":
         c1 = f"/tools/plasp translate {domainPath} > {domainPath}.lp"
         subprocess.run(c1, text=True, capture_output=True, shell=True)
 
@@ -81,7 +81,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
             print(f"TimeoutError after {timeoutLimit} seconds")
             return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, -1, -1)
         
-    elif approach == "asp-general":
+    elif approach == "asp_general":
         c1 = f"/tools/plasp translate {domainPath} > {domainPath}.lp"
         subprocess.run(c1, text=True, capture_output=True, shell=True)
 
