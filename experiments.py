@@ -43,18 +43,18 @@ if __name__ == "__main__":
 
     approaches = [
         "dfs",
-        "bfs",
+        # "bfs",
         "asp-simple",
         # "asp-general",
         # "qasp",
     ]
 
     domain_types = [
-        # "singlePath",
+        "singlePath",
         # "multiplePaths",
         # "multiplePathsDeadEnds",
         "generalApproach",
-        # "barabasiAlbertLongestShortestPath",
+        "barabasiAlbertLongestShortestPath",
         # "barabasiAlbertDegree",
     ]
 
@@ -63,27 +63,30 @@ if __name__ == "__main__":
     [f.unlink() for f in Path(domains_folder).glob("*") if f.is_file()]
 
     ##### Generate singlePath, multiplePaths, multiplePathsDeadEnds, domains
-    # domainGenerator.generateStandardDomains(domains_folder, 10, 500, 10, "singlePath")
-    # domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePaths")
-    # domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePathsDeadEnds")
+    domainGenerator.generateStandardDomains(domains_folder, 10, 50, 10, "singlePath")
+    domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePaths")
+    domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePathsDeadEnds")
 
     # TODO asp-simple and asp-general encodings become UNSATISFIABLE as soon as num_plans_success > 1; probably related to the pre-goal action requiring "and" instead of "or" in the precondition
 
     ##### Generate generalApproach domains
+    import numpy as np
+    step_range = np.arange(1.0, 5.3, 0.3)
+
     # Scenario 1: only one success path, many dead ends, all paths short
-    for i in [x / 10.0 for x in range(10, 50)]:
+    for i in step_range:
         domainGenerator.generateGeneralApproachDomain(domains_folder, 1,  4,  int(4*i), 4)
 
-    # Scenario 2: only one success path, few dead ends, all paths long
-    # for i in [x / 10.0 for x in range(10, 50)]:
+    # # Scenario 2: only one success path, few dead ends, all paths long
+    # for i in step_range:
     #     domainGenerator.generateGeneralApproachDomain(domains_folder, 1,  int(4*i),  int(2*i), int(4*i))
 
     # # Scenario 3: multiple long success paths, no dead ends
-    # for i in [x / 10.0 for x in range(10, 50)]:
+    # for i in step_range:
     #     domainGenerator.generateGeneralApproachDomain(domains_folder, int(4*i),  int(4*i),  0, 0)
 
     # # Scenario 4: few short success paths, many long dead ends
-    # for i in [x / 10.0 for x in range(10, 50)]:
+    # for i in step_range:
     #     domainGenerator.generateGeneralApproachDomain(domains_folder, 2,  4,  int(4*i), int(4*i))
 
     # num_plans_success >> num_plans_dead_end -> bfs faster than dfs
@@ -98,31 +101,32 @@ if __name__ == "__main__":
     # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 100, "barabasiAlbertLongestShortestPath")
 
     # n >> m -> dfs usually faster than bfs
-    # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 10, "barabasiAlbertLongestShortestPath")
+    domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 10, "barabasiAlbertLongestShortestPath")
 
-    time = time.time()
+    timestamp = time.time()
     Path("./experiments/").mkdir(parents=True, exist_ok=True)
     for approach in approaches:
         for domain_type in domain_types:
-            with open(f"./experiments/experiment-{domain_type}-{approach}-{time}.csv", "a+") as f:
-                f.write("approach,domain,generatorArgument,path,runtimeInseconds,setSizeInmb\n")
+            with open(f"./experiments/experiment-{domain_type}-{approach}-{timestamp}.csv", "a+") as f:
+                if domain_type == "singlePath" or domain_type == "multiplePaths" or domain_type == "multiplePathsDeadEnds":
+                    f.write("approach,domain_type,horizon,i,path,runtime_seconds,set_size_mb\n")
+
+                elif domain_type == "generalApproach":
+                    f.write("approach,domain_type,horizon,num_plans_success,length_plans_success,length_plans_dead_end,num_plans_dead_end,max_path_length,path,runtime_seconds,set_size_mb\n")
+
+                elif domain_type == "barabasiAlbertLongestShortestPath" or domain_type == "barabasiAlbertDegree":
+                    f.write("approach,domain_type,horizon,n,m,node_a,node_b,path_length,path,runtime_seconds,set_size_mb\n")
+
 
     pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
-    # Sorts pathlist and therefore csv lines correctly
-    def key_func(s):
-        return [int(part) if part.isdigit() else part for part in str(s).split('-')[3:8]]
-
-    # Sort the list using the custom key function
-    sorted_list = sorted(pathlist, key=key_func)
-
-    for path in sorted_list:
+    for path in pathlist:
         path = str(path)
 
         for approach in approaches:
 
             domain_type = domainTypeFromDomainFileName(path)
-            result_file_path = f"./experiments/experiment-{domain_type}-{approach}-{time}.csv"
+            result_file_path = f"./experiments/experiment-{domain_type}-{approach}-{timestamp}.csv"
 
             # skip domain if it is commented out
             if domain_type not in domain_types:
@@ -156,12 +160,8 @@ if __name__ == "__main__":
             else:
                 csv_runtime = -1
             csv_set_size = int(set_size) / 1024
-
-            if domain_type == "singlePath" or domain_type == "multiplePaths" or domain_type == "multiplePathsDeadEnds":
-                csv_i_value = re.sub('[^0-9]', '', path)
-            else:
-                csv_i_value = "not applicable"
+            csv_generator_arguments = path.split(f"{domain_type}-")[1].split(".pddl")[0].replace("-", ",")
 
             # append results
             with open(result_file_path, "a+") as f:
-                f.write(f"{approach},{domain_type},{csv_i_value},{path},{csv_runtime},{csv_set_size}\n")
+                f.write(f"{approach},{domain_type},{horizon},{csv_generator_arguments},{path},{csv_runtime},{csv_set_size}\n")
