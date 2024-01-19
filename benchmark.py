@@ -85,6 +85,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
         c1 = f"/tools/plasp translate {domainPath} > {domainPath}.lp"
         subprocess.run(c1, text=True, capture_output=True, shell=True)
 
+        # use --opt-mode=optN to get all optimal plans
         c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.general.alt.asp -c horizon={horizon} {domainPath}.lp"
         try:
             output = subprocess.run(c2, text=True, capture_output=True, shell=True, timeout=timeoutLimit)

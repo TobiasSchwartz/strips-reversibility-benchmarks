@@ -155,9 +155,7 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
 
     goal = f"(f{total_states-1})"
     next_state = 1
-    to_goal = []
 
-    # first generate all plans leading to the goal state
     actions = []
 
     for _ in range(num_plans_success):
@@ -178,9 +176,8 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
         actions.append(f"""
     (:action add-f{next_state}-goal
     :precondition (f{next_state})
-    :effect (and {goal} (not (f{next_state}))))
+    :effect (and {goal}))
         """)
-        to_goal.append(f"(f{next_state})")
         next_state += 1
 
     # then generate all plans leading to a dead end
@@ -188,7 +185,7 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
         actions.append(f"""
     (:action add-f0-f{next_state}
     :precondition (f0)
-    :effect (and (f{next_state}) ))
+    :effect (and (f{next_state})))
         """)
 
         for _ in range(1,length_plans_dead_end):
@@ -210,21 +207,15 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
     :effect (and (f0) {" ".join([p for p in not_predicates if p != "(not (f0))"])}))
 
     {newline.join(actions)}
-    
-    (:action nop)
-    :precondition (and)
-    :effect (and)
+        
+    (:action nop
+    :precondition (and )
+    :effect (and ))
     )
 
     """
 
     return domain
-
-    #  {" ".join([f"(not {p})" for p in predicates if p != goal])}
-
-    # (:action pre-goal
-    # :precondition (and {" ".join(to_goal)})
-    # :effect (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])}))
 
 
 def barabasiAlbertLongestShortestPath(n, m):
