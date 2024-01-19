@@ -199,18 +199,25 @@ def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end,
     (:predicates {" ".join(predicates)})
 
     (:action del-all
-    :precondition (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])})
+    :precondition (and {goal})
     :effect (and (f0) {" ".join([p for p in not_predicates if p != "(not (f0))"])}))
 
-    (:action pre-goal
-    :precondition (and {" ".join(to_goal)})
-    :effect (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])}))
-
     {newline.join(actions)}
+    
+    (:action nop)
+    :precondition (and)
+    :effect (and)
     )
+
     """
 
     return domain
+
+    #  {" ".join([f"(not {p})" for p in predicates if p != goal])}
+
+    # (:action pre-goal
+    # :precondition (and {" ".join(to_goal)})
+    # :effect (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])}))
 
 
 def barabasiAlbertLongestShortestPath(n, m):

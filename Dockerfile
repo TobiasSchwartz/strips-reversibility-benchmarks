@@ -51,6 +51,8 @@ RUN wget https://raw.githubusercontent.com/pucrs-automated-planning/pddl-parser/
 COPY ./requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
+COPY ./sequential-horizon.general.asp sequential-horizon.general.alt.asp
+
 ENV PATH="/tools:${PATH}"
 
 VOLUME [ "/reversibility" ]
