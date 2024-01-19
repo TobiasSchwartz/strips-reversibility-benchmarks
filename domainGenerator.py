@@ -132,7 +132,7 @@ def multiplePathsDeadEnds(i):
     return domain
 
 
-def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
+def generalized(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
     """
     Generates a PDDL domain with a fixed number of plans of length i leading to the same goal state,
     and a fixed number of plans of length i leading to a dead end.
@@ -193,7 +193,6 @@ def generalApproach(num_plans_success, length_plans_success, num_plans_dead_end,
 
         for _ in range(1,length_plans_dead_end):
             next_state += 1
-            # (not (f{next_state-1}))
             actions.append(f"""
     (:action add-f{next_state-1}-f{next_state}
     :precondition (f{next_state-1})
@@ -382,7 +381,7 @@ def generateStandardDomains(folder, start, limit, step, domain):
         print("")
 
 
-def generateGeneralApproachDomain(folder, num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
+def generateGeneralizedDomain(folder, num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end):
     """
     Generates a domain based on the general approach for generating domains.
 
@@ -397,11 +396,11 @@ def generateGeneralApproachDomain(folder, num_plans_success, length_plans_succes
 
     path_length = max(length_plans_success, length_plans_dead_end)
 
-    domain_name = f"{generate_domain_id()}-generalApproach-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end}-{path_length}"
+    domain_name = f"{generate_domain_id()}-generalized-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end}-{path_length}"
 
     print(f"Generating {domain_name} domain ... ")
 
-    domain = generalApproach(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end)
+    domain = generalized(num_plans_success, length_plans_success, num_plans_dead_end, length_plans_dead_end)
 
     filename = f"{folder}/{domain_name}.pddl"
     with open(filename, "w") as f:
@@ -453,4 +452,4 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     
 if __name__ == "__main__":
     import fire
-    fire.Fire(generateStandardDomains, generateGeneralApproachDomain, generateBarabasiAlbertDomains)
+    fire.Fire(generateStandardDomains, generateGeneralizedDomain, generateBarabasiAlbertDomains)
