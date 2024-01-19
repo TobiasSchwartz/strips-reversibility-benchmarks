@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     approaches = [
         "dfs",
-        # "bfs",
+        "bfs",
         "asp-simple",
         # "asp-general",
         # "qasp",
@@ -62,27 +62,35 @@ if __name__ == "__main__":
 
     [f.unlink() for f in Path(domains_folder).glob("*") if f.is_file()]
 
-    # Generate singlePath, multiplePaths, multiplePathsDeadEnds, domains
+    ##### Generate singlePath, multiplePaths, multiplePathsDeadEnds, domains
     # domainGenerator.generateStandardDomains(domains_folder, 10, 500, 10, "singlePath")
     # domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePaths")
     # domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePathsDeadEnds")
 
-    # Generate domains based on the general approach
+    # TODO asp-simple and asp-general encodings become UNSATISFIABLE as soon as num_plans_success > 1; probably related to the pre-goal action requiring "and" instead of "or" in the precondition
+
+    ##### Generate generalApproach domains
+    # Scenario 1: only one success path, many dead ends, all paths short
+    for i in [x / 10.0 for x in range(10, 50)]:
+        domainGenerator.generateGeneralApproachDomain(domains_folder, 1,  4,  int(4*i), 4)
+
+    # Scenario 2: only one success path, few dead ends, all paths long
+    # for i in [x / 10.0 for x in range(10, 50)]:
+    #     domainGenerator.generateGeneralApproachDomain(domains_folder, 1,  int(4*i),  int(2*i), int(4*i))
+
+    # # Scenario 3: multiple long success paths, no dead ends
+    # for i in [x / 10.0 for x in range(10, 50)]:
+    #     domainGenerator.generateGeneralApproachDomain(domains_folder, int(4*i),  int(4*i),  0, 0)
+
+    # # Scenario 4: few short success paths, many long dead ends
+    # for i in [x / 10.0 for x in range(10, 50)]:
+    #     domainGenerator.generateGeneralApproachDomain(domains_folder, 2,  4,  int(4*i), int(4*i))
+
     # num_plans_success >> num_plans_dead_end -> bfs faster than dfs
-    # domainGenerator.generateGeneralApproachDomain(domains_folder, 2, 2, 50, 5)
-
     # multiple long paths leading to the goal -> dfs faster than bfs
-    base_params = (1, 2, 4, 2)
-
-    for i in [x / 10.0 for x in range(10, 30)]:
-        # TODO asp-simple and asp-general encodings become UNSATISFIABLE as soon as num_plans_success > 1; probably related to the pre-goal action requiring "and" instead of "or" in the precondition
-        # increase all parameters by 10 percent each step 
-        domainGenerator.generateGeneralApproachDomain(domains_folder, int(base_params[0] * i) ,  int(base_params[1] * i),  int(base_params[2] * i), int(base_params[3] * i))
-
     # num_plans_success >> num_plans_dead_end -> dfs ~ bfs
-    # domainGenerator.generateGeneralApproachDomain(domains_folder, 2, 5, 5, 2)
 
-    # Generate domains using Barabasi-Albert Longest Shortest Path method
+    ##### Generate barabasiAlbertLongestShortestPath domains
     # n ~ m -> sometimes bfs, sometimes dfs faster
     # domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 199, "barabasiAlbertLongestShortestPath")
 
@@ -101,7 +109,14 @@ if __name__ == "__main__":
 
     pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
-    for path in pathlist:
+    # Sorts pathlist and therefore csv lines correctly
+    def key_func(s):
+        return [int(part) if part.isdigit() else part for part in str(s).split('-')[3:8]]
+
+    # Sort the list using the custom key function
+    sorted_list = sorted(pathlist, key=key_func)
+
+    for path in sorted_list:
         path = str(path)
 
         for approach in approaches:
@@ -114,8 +129,8 @@ if __name__ == "__main__":
                 continue
             
             # skip domain if run on previous domain already timed out
-            # Attention: use only for singlePath, multiplePath, and multiplePathsDeadEnds, as only these will definitely become more difficult
-            if domain_type == "singlePath" or domain_type == "multiplePaths" or domain_type == "multiplePathsDeadEnds":
+            # Attention: use only for singlePath, multiplePath, multiplePathsDeadEnds, and generalApproach as only these will definitely become more difficult
+            if domain_type == "singlePath" or domain_type == "multiplePaths" or domain_type == "multiplePathsDeadEnds" or domain_type == "generalApproach":
                 with open(result_file_path) as f:
                     if ",-1," in f.readlines()[-1]:
                         continue
