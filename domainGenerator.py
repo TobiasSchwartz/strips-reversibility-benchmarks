@@ -229,12 +229,34 @@ def barabasiAlbertLongestShortestPath(n, m):
     seed = random.seed(246)
 
     G = nx.barabasi_albert_graph(m=m, n=n, seed=seed)
-    shortest_paths = nx.all_pairs_shortest_path(G)
     G = nx.to_directed(G)
+    # clone graph to remove inverse edges
+    G = G.copy()
+    # only keep one edge for every two nodes, e.g., edge (u,v) only have one edge u->v or v->u.
+    G.remove_edges_from([(u,v) for (u,v) in G.edges if u > v])
 
-    shortest_paths = [list(paths.values()) for _, paths in shortest_paths]
-    shortest_paths = [item for sublist in shortest_paths for item in sublist]
-    longest_shortest_paths = sorted(shortest_paths, key=len, reverse=True)[:10]
+    # sort nodes by out degree
+    sorted_nodes = sorted(G.out_degree, key=lambda x: x[1], reverse=True)
+
+    # start at most connected node
+    node_a = sorted_nodes[0][0]
+
+    # plot the graph
+    # import matplotlib.pyplot as plt
+    # nx.draw(G, with_labels=True)
+    # plt.savefig(f"barabasiAlbert_{m}-{n}-{node_a}.png")
+
+
+    # G = nx.barabasi_albert_graph(m=m, n=n, seed=seed)
+    # shortest_paths = nx.all_pairs_shortest_path(G)
+    # G = nx.to_directed(G)
+
+    shortest_paths = nx.single_source_shortest_path(G, node_a)
+    
+    longest_shortest_paths = sorted(shortest_paths.values(), key=len, reverse=True)[:1]
+
+    # print("\n".join([str(p) for p in longest_shortest_paths]))
+    # exit()
 
     for path in longest_shortest_paths:
 
