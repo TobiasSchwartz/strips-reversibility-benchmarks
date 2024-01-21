@@ -49,17 +49,17 @@ if __name__ == "__main__":
         "dfs",
         "bfs",
         "asp_simple",
-        "asp_general",
+        # "asp_general",
         # "qasp",
     ]
 
     # specify domains of which types are created and evaluated
     domain_types = [
         # "singlePath",
-        # "multiplePaths",
+        "multiplePaths",
         # "multiplePathsDeadEnds",
         # "generalized",
-        "barabasiAlbertLongestShortestPath",
+        # "barabasiAlbertLongestShortestPath",
         # "barabasiAlbertDegree",
     ]
 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
                     f.write("approach,domain_type,horizon,m,n,node_a,node_b,domain_size,path,runtime_seconds,set_size_mb\n")
 
     #### Run experiments
-    timeout = 6000
+    timeout = 20
     pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
     for path in pathlist:

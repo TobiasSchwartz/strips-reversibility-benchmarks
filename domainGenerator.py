@@ -33,7 +33,7 @@ def singlePath(i):
     """ for j in range(1, i+1)]
 
     domain = f"""
-    (define (domain rev-{i})
+    (define (domain singlePath-{i})
     (:requirements :strips)
     (:predicates {" ".join(predicates)})
 
@@ -73,7 +73,7 @@ def multiplePaths(i):
     """ for j in range(1, i+1)]
 
     domain = f"""
-    (define (domain quadratic-{i})
+    (define (domain multiplePaths-{i})
     (:requirements :strips)
     (:predicates {" ".join(predicates)})
 
@@ -111,7 +111,7 @@ def multiplePathsDeadEnds(i):
     """ for j in range(1, i+1)]
 
     domain = f"""
-    (define (domain quadratic-{i})
+    (define (domain deadEnds-{i})
     (:requirements :strips)
     (:predicates {" ".join(predicates + ["(token)"])})
 
@@ -198,7 +198,7 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
         next_state += 1
 
     domain = f"""
-    (define (domain benchmark-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end})
+    (define (domain generalized-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end})
     (:requirements :strips)
     (:predicates {" ".join(predicates)})
 
