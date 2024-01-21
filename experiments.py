@@ -49,18 +49,18 @@ if __name__ == "__main__":
         "dfs",
         "bfs",
         "asp_simple",
-        # "asp_general",
-        # "qasp",
+        "asp_general",
+        "qasp",
     ]
 
     # specify domains of which types are created and evaluated
     domain_types = [
-        # "singlePath",
+        "singlePath",
         "multiplePaths",
-        # "multiplePathsDeadEnds",
-        # "generalized",
-        # "barabasiAlbertLongestShortestPath",
-        # "barabasiAlbertDegree",
+        "multiplePathsDeadEnds",
+        "generalized",
+        "barabasiAlbertLongestShortestPath",
+        "barabasiAlbertDegree",
     ]
 
     domains_folder = "domains"
@@ -80,7 +80,6 @@ if __name__ == "__main__":
         domainGenerator.generateStandardDomains(domains_folder, 1, 50, 1, "multiplePathsDeadEnds")
 
     ##### Generate generalized domains
-    # TODO asp_simple and asp_general encodings become UNSATISFIABLE as soon as num_plans_success > 1; probably related to the pre-goal action requiring "and" instead of "or" in the precondition
     if "generalized" in domain_types:
         step_range = np.arange(1.0, 5.3, 0.3)
 
@@ -129,7 +128,7 @@ if __name__ == "__main__":
                     f.write("approach,domain_type,horizon,m,n,node_a,node_b,domain_size,path,runtime_seconds,set_size_mb\n")
 
     #### Run experiments
-    timeout = 20
+    timeout = 60
     pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
     for path in pathlist:
