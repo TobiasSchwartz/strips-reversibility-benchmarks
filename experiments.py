@@ -84,20 +84,20 @@ if __name__ == "__main__":
         step_range = np.arange(1.0, 5.3, 0.3)
 
         # Scenario 1: only one success path, many dead ends, all paths short
-        for i in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*i), 4)
+        for factor in step_range:
+            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*factor), 4)
 
         # Scenario 2: only one success path, few dead ends, all paths long
-        for i in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*i),  int(2*i), int(4*i))
+        for factor in step_range:
+            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
 
         # Scenario 3: multiple long success paths, no dead ends
-        for i in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, int(4*i),  int(4*i),  0, 0)
+        for factor in step_range:
+            domainGenerator.generateGeneralizedDomain(domains_folder, int(4*factor),  int(4*factor),  0, 0)
 
         # Scenario 4: few short success paths, many long dead ends
-        for i in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 2,  4,  int(4*i), int(4*i))
+        for factor in step_range:
+            domainGenerator.generateGeneralizedDomain(domains_folder, 2,  4,  int(4*factor), int(4*factor))
 
     #### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
