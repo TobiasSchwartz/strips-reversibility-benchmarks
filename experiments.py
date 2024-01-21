@@ -19,7 +19,8 @@ def domainTypeFromDomainFileName(filename):
     elif "generalized" in filename:
         return "generalized"
     elif "barabasiAlbertLongestShortestPath" in filename:
-        return "barabasiAlbertLongestShortestPath"
+        m_val = int(filename.split("-")[2])
+        return f"barabasiAlbertLongestShortestPath-{(m_val if m_val<= 9 else 'max')}"
     elif "barabasiAlbertDegree" in filename:
         return "barabasiAlbertDegree"
 
@@ -45,20 +46,20 @@ if __name__ == "__main__":
 
     # specify the used approach
     approaches = [
-        # "dfs",
+        "dfs",
         "bfs",
-        # "asp_simple",
-        # "asp_general",
+        "asp_simple",
+        "asp_general",
         # "qasp",
     ]
 
     # specify domains of which types are created and evaluated
     domain_types = [
         # "singlePath",
-        "multiplePaths",
+        # "multiplePaths",
         # "multiplePathsDeadEnds",
         # "generalized",
-        # "barabasiAlbertLongestShortestPath",
+        "barabasiAlbertLongestShortestPath",
         # "barabasiAlbertDegree",
     ]
 
@@ -68,7 +69,7 @@ if __name__ == "__main__":
 
     ##### Generate singlePath domains
     if "singlePath" in domain_types:
-        domainGenerator.generateStandardDomains(domains_folder, 10, 100, 10, "singlePath")
+        domainGenerator.generateStandardDomains(domains_folder, 10, 500, 10, "singlePath")
 
     ##### Generate multiplePaths domains
     if "multiplePaths" in domain_types:
@@ -101,9 +102,14 @@ if __name__ == "__main__":
 
     #### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
-        domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 199, "barabasiAlbertLongestShortestPath")
-        domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 100, "barabasiAlbertLongestShortestPath")
-        domainGenerator.generateBarabasiAlbertDomains(domains_folder, 200, 10, "barabasiAlbertLongestShortestPath")
+        for i in range(10, 201, 10):
+            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, 1, "barabasiAlbertLongestShortestPath")
+        for i in range(10, 201, 10):
+            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, 5, "barabasiAlbertLongestShortestPath")
+        for i in range(10, 201, 10):
+            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, 9, "barabasiAlbertLongestShortestPath")
+        for i in range(10, 201, 10):
+            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, i-1, "barabasiAlbertLongestShortestPath")
 
     timestamp = time.time()
 
@@ -111,6 +117,12 @@ if __name__ == "__main__":
     Path("./experiments/").mkdir(parents=True, exist_ok=True)
 
     for approach in approaches:
+        if "barabasiAlbertLongestShortestPath" in domain_types:
+            domain_types.remove("barabasiAlbertLongestShortestPath")
+            domain_types.append("barabasiAlbertLongestShortestPath-1")
+            domain_types.append("barabasiAlbertLongestShortestPath-5")
+            domain_types.append("barabasiAlbertLongestShortestPath-9")
+            domain_types.append("barabasiAlbertLongestShortestPath-max")
         for domain_type in domain_types:
             with open(f"./experiments/{domain_type}-{approach}-{timestamp}.csv", "a+") as f:
                 if domain_type == "singlePath" or domain_type == "multiplePaths" or domain_type == "multiplePathsDeadEnds":
@@ -119,11 +131,11 @@ if __name__ == "__main__":
                 elif domain_type == "generalized":
                     f.write("approach,domain_type,horizon,num_plans_success,length_plans_success,length_plans_dead_end,num_plans_dead_end,domain_size,path,runtime_seconds,set_size_mb\n")
 
-                elif domain_type == "barabasiAlbertLongestShortestPath" or domain_type == "barabasiAlbertDegree":
-                    f.write("approach,domain_type,horizon,n,m,node_a,node_b,domain_size,path,runtime_seconds,set_size_mb\n")
+                elif "barabasiAlbertLongestShortestPath" in domain_type or domain_type == "barabasiAlbertDegree":
+                    f.write("approach,domain_type,horizon,m,n,node_a,node_b,domain_size,path,runtime_seconds,set_size_mb\n")
 
     #### Run experiments
-    timeout = 60
+    timeout = 6000
     pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
     for path in pathlist:
@@ -163,7 +175,7 @@ if __name__ == "__main__":
             else:
                 csv_runtime = -1
             csv_set_size = int(set_size) / 1024
-            csv_generator_arguments = path.split(f"{domain_type}-")[1].split(".pddl")[0].replace("-", ",")
+            csv_generator_arguments = ",".join(path.split(".pddl")[0].split("-")[2:])
 
             # append results
             with open(result_file_path, "a+") as f:
