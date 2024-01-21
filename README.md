@@ -11,9 +11,9 @@
     •
     <a href="#experiments">Experiments</a>
     •
-    <a href="#references">Experiments</a>
+    <a href="#references">References</a>
     •
-    <a href="#license">Experiments</a>
+    <a href="#license">License</a>
 </p>
 
 # Summary
@@ -23,7 +23,7 @@ using a depth-first search (`dfs`) and breadth-first search (`bfs`) strategy. Th
 
 We extended their domain generator template (`singlePath`) to a `multiplePaths` and `multiplePathsDeadEnds` template but also added completely new domain generators: one based on a general approach for domain generation (`generalized`) and two others (`barabasiAlbertLongestShortestPath`, `barabasiAlbertLongestDegree`) based on the Barabási–Albert model (see [`domainGenerator.py`](domainGenerator.py)).
 
-We compare our `dfs` and `bfs` strategies with different ASP variants (`asp_simple`, `asp_general`, `qasp`) [[2-4]](#references). To this end, we adapted the `asp_simple` implementation to enable compatibility with our domain generators.
+We compare our `dfs` and `bfs` strategies with different ASP variants (`asp_simple`, `asp_general`, `qasp`) [[2-4]](#references). To this end, we adapted the `asp_general` implementation to enable compatibility with our domain generators (see [sequential-horizon.general.asp](./sequential-horizon.general.asp)).
 
 # Setup & Usage
 
@@ -41,6 +41,8 @@ Run `python3 ./<script> --help` where `<script>` is one of the provided python s
 # Experiments
 
 To reproduce the results from our papers, execute the [`experiments.py`](experiments.py) script from within the docker container via `python3 ./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp_simple`, `asp_general`, `qasp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`, `generalized`, `barabasiAlbertLongestShortestPath`, `barabasiAlbertDegree`) combination.
+
+The [benchmarks.zip](./benchmarks.zip) file contains the benchmark results used in our AMAI submission.
 
 ## Further Examples
 
