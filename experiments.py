@@ -91,11 +91,7 @@ if __name__ == "__main__":
         for factor in step_range:
             domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
 
-        # Scenario 3: multiple long success paths, no dead ends
-        for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, int(4*factor),  int(4*factor),  0, 0)
-
-        # Scenario 4: few short success paths, many long dead ends
+        # Scenario 3: few short success paths, many long dead ends
         for factor in step_range:
             domainGenerator.generateGeneralizedDomain(domains_folder, 2,  4,  int(4*factor), int(4*factor))
 
