@@ -98,14 +98,12 @@ if __name__ == "__main__":
 
     #### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
-        for i in range(10, 201, 10):
-            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, 1, "barabasiAlbertLongestShortestPath")
-        for i in range(10, 201, 10):
-            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, 5, "barabasiAlbertLongestShortestPath")
-        for i in range(10, 201, 10):
-            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, 9, "barabasiAlbertLongestShortestPath")
-        for i in range(10, 201, 10):
-            domainGenerator.generateBarabasiAlbertDomains(domains_folder, i, i-1, "barabasiAlbertLongestShortestPath")
+        for n in range(10, 201, 10):
+            domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 1, "barabasiAlbertLongestShortestPath")
+        for n in range(10, 201, 10):
+            domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 5, "barabasiAlbertLongestShortestPath")
+        for n in range(10, 201, 10):
+            domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, n-1, "barabasiAlbertLongestShortestPath")
 
     timestamp = time.time()
 
