@@ -2,7 +2,6 @@
 
 import benchmark
 from pathlib import Path
-import re
 import datetime
 import time
 import domainGenerator
