@@ -68,8 +68,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
         c1 = f"/tools/plasp translate {domainPath} > {domainPath}.lp"
         subprocess.run(c1, text=True, capture_output=True, shell=True)
 
-        # use --opt-mode=optN to get all optimal plans
-        c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.general.alt.asp -c horizon={horizon} {domainPath}.lp"
+        c2 = f"/usr/bin/time -v /tools/clingo /tools/sequential-horizon.general.asp -c horizon={horizon} {domainPath}.lp"
         try:
             with tempfile.TemporaryFile() as tempf:
                 process = subprocess.Popen(c2, stdout=tempf, stderr=tempf, shell=True, preexec_fn=os.setsid)
