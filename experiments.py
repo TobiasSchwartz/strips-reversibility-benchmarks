@@ -48,7 +48,7 @@ if __name__ == "__main__":
         "dfs",
         "bfs",
         "asp_simple",
-        "asp_general"
+        # "asp_general"
     ]
 
     # specify domains of which types are created and evaluated
@@ -78,19 +78,19 @@ if __name__ == "__main__":
 
     ##### Generate generalized domains
     if "generalized" in domain_types:
-        step_range = np.arange(1.0, 101.1, 5.0)
+        step_range = np.arange(1.0, 61.1, 3.0)
 
         # Scenario 1: only one success path, many dead ends, all paths short
         for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*factor), 4)
+            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(20*factor), 4)
 
         # # Scenario 2: only one success path, few dead ends, all paths long
         for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
+            domainGenerator.generateGeneralizedDomain(domains_folder, int(6*factor),  10,  int(4*factor), 10)
 
         # Scenario 3: few short success paths, many long dead ends
         for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 2,  4,  int(4*factor), int(4*factor))
+            domainGenerator.generateGeneralizedDomain(domains_folder, 10,  4,  int(2*factor), int(2*factor))
 
     #### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
