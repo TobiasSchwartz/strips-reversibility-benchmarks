@@ -45,18 +45,17 @@ if __name__ == "__main__":
 
     # specify the used approach
     approaches = [
-        "dfs",
-        "bfs",
+        # "dfs",
+        # "bfs",
         "asp_simple",
-        "asp_general",
-        "qasp",
+        "asp_general"
     ]
 
     # specify domains of which types are created and evaluated
     domain_types = [
-        "singlePath",
-        "multiplePaths",
-        "multiplePathsDeadEnds",
+        # "singlePath",
+        # "multiplePaths",
+        # "multiplePathsDeadEnds",
         "generalized",
         "barabasiAlbertLongestShortestPath"
     ]
@@ -82,12 +81,12 @@ if __name__ == "__main__":
         step_range = np.arange(1.0, 5.3, 0.3)
 
         # Scenario 1: only one success path, many dead ends, all paths short
-        for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*factor), 4)
+        # for factor in step_range:
+        #     domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*factor), 4)
 
-        # Scenario 2: only one success path, few dead ends, all paths long
-        for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
+        # # Scenario 2: only one success path, few dead ends, all paths long
+        # for factor in step_range:
+        #     domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
 
         # Scenario 3: few short success paths, many long dead ends
         for factor in step_range:

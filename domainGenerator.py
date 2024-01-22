@@ -207,7 +207,7 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
     :effect (and {" ".join(not_predicates)}))
 
     (:action add-f0
-    :effect (and (f0) {" ".join([f"(not {p})" for p in predicates if p != "(f0)"])}))
+    :effect (f0))
 
     {newline.join(actions)}
     )
