@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from typing import Type
+import sys
+sys.path.append("../tools/")
 
 from action import Action
 from PDDL import PDDL_Parser
@@ -35,7 +36,8 @@ class State:
 
 
 def pre_a(action):
-    return action.negative_preconditions.union(action.positive_preconditions)
+    # return action.negative_preconditions.union(action.positive_preconditions)
+    return action.positive_preconditions
 
 
 def del_a(action):
@@ -160,6 +162,7 @@ def find_rev(domainPathStr, reversibleActionName, strategy, maxPathLimit=-1, fin
         print(
             f"Computation aborted due to problems encountered while parsing domain {domainPathStr}!")
         print(e)
+        print(type(e).__name__, __file__, e.__traceback__.tb_lineno)
 
     if not actionFound:
         print(
