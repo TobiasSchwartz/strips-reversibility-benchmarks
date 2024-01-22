@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import sys
+sys.path.append("../tools/")
+
 from action import Action
 from PDDL import PDDL_Parser
 
