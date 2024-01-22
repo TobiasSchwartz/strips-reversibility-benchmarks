@@ -45,8 +45,8 @@ if __name__ == "__main__":
 
     # specify the used approach
     approaches = [
-        # "dfs",
-        # "bfs",
+        "dfs",
+        "bfs",
         "asp_simple",
         "asp_general"
     ]
@@ -78,15 +78,15 @@ if __name__ == "__main__":
 
     ##### Generate generalized domains
     if "generalized" in domain_types:
-        step_range = np.arange(1.0, 5.3, 0.3)
+        step_range = np.arange(1.0, 101.1, 5.0)
 
         # Scenario 1: only one success path, many dead ends, all paths short
-        # for factor in step_range:
-        #     domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*factor), 4)
+        for factor in step_range:
+            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*factor), 4)
 
         # # Scenario 2: only one success path, few dead ends, all paths long
-        # for factor in step_range:
-        #     domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
+        for factor in step_range:
+            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
 
         # Scenario 3: few short success paths, many long dead ends
         for factor in step_range:
@@ -94,11 +94,11 @@ if __name__ == "__main__":
 
     #### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
-        for n in range(10, 201, 10):
+        for n in range(1000, 5001, 200):
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 1, "barabasiAlbertLongestShortestPath")
-        for n in range(10, 201, 10):
+        for n in range(1000, 5001, 200):
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 5, "barabasiAlbertLongestShortestPath")
-        for n in range(10, 201, 10):
+        for n in range(1000, 5001, 200):
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, n-1, "barabasiAlbertLongestShortestPath")
 
     timestamp = time.time()
@@ -111,7 +111,6 @@ if __name__ == "__main__":
             domain_types.remove("barabasiAlbertLongestShortestPath")
             domain_types.append("barabasiAlbertLongestShortestPath-1")
             domain_types.append("barabasiAlbertLongestShortestPath-5")
-            domain_types.append("barabasiAlbertLongestShortestPath-9")
             domain_types.append("barabasiAlbertLongestShortestPath-max")
         for domain_type in domain_types:
             with open(f"./experiments/{domain_type}-{approach}-{timestamp}.csv", "a+") as f:
