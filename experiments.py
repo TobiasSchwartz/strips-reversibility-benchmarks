@@ -80,15 +80,15 @@ if __name__ == "__main__":
     if "generalized" in domain_types:
         step_range = np.arange(1.0, 61.1, 3.0)
 
-        # Scenario 1: only one success path, many dead ends, all paths short
+        # Scenario 1
         for factor in step_range:
             domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(20*factor), 4)
 
-        # # Scenario 2: only one success path, few dead ends, all paths long
+        # # Scenario 2
         for factor in step_range:
             domainGenerator.generateGeneralizedDomain(domains_folder, int(6*factor),  10,  int(4*factor), 10)
 
-        # Scenario 3: few short success paths, many long dead ends
+        # Scenario 3
         for factor in step_range:
             domainGenerator.generateGeneralizedDomain(domains_folder, 10,  4,  int(2*factor), int(2*factor))
 
