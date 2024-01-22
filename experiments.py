@@ -58,8 +58,7 @@ if __name__ == "__main__":
         "multiplePaths",
         "multiplePathsDeadEnds",
         "generalized",
-        "barabasiAlbertLongestShortestPath",
-        "barabasiAlbertDegree",
+        "barabasiAlbertLongestShortestPath"
     ]
 
     domains_folder = "domains"
