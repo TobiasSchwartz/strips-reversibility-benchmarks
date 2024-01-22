@@ -23,7 +23,7 @@ using a depth-first search (`dfs`) and breadth-first search (`bfs`) strategy. Th
 
 We extended their domain generator template (`singlePath`) to a `multiplePaths` and `multiplePathsDeadEnds` template but also added completely new domain generators: one based on a general approach for domain generation (`generalized`) and two others (`barabasiAlbertLongestShortestPath`, `barabasiAlbertLongestDegree`) based on the Barabási–Albert model (see [`domainGenerator.py`](domainGenerator.py)).
 
-We compare our `dfs` and `bfs` strategies with different ASP variants (`asp_simple`, `asp_general`, `qasp`) [[2-4]](#references). To this end, we adapted the `asp_general` implementation to enable compatibility with our generated domains (see [sequential-horizon.general.asp](./sequential-horizon.general.asp)).
+We compare our `dfs` and `bfs` strategies with different ASP variants (`asp_simple`, `asp_general`, `qasp`) [[2-4]](#references).
 
 # Setup & Usage
 
