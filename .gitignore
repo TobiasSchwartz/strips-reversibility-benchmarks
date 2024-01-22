@@ -4,3 +4,5 @@ experiments/
 
 *.pddl.lp
 *.pddl.qasp
+
+PDDL.py
