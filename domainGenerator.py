@@ -162,7 +162,7 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
         actions.append(f"""
     (:action add-f0-f{next_state}
     :precondition (f0)
-    :effect (and (f{next_state})))
+    :effect (and (f{next_state}) (not (f0))))
         """)
 
         for _ in range(1,length_plans_success-1):
@@ -170,13 +170,13 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
             actions.append(f"""
     (:action add-f{next_state-1}-f{next_state}
     :precondition (f{next_state-1})
-    :effect (and (f{next_state})))
+    :effect (and (f{next_state}) (not (f{next_state-1}))))
             """)
 
         actions.append(f"""
     (:action add-f{next_state}-goal
     :precondition (f{next_state})
-    :effect (and {goal}))
+    :effect (and {goal} (not (f{next_state}))))
         """)
         next_state += 1
 
@@ -185,7 +185,7 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
         actions.append(f"""
     (:action add-f0-f{next_state}
     :precondition (f0)
-    :effect (and (f{next_state})))
+    :effect (and (f{next_state}) (not (f0))))
         """)
 
         for _ in range(1,length_plans_dead_end):
@@ -193,7 +193,7 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
             actions.append(f"""
     (:action add-f{next_state-1}-f{next_state}
     :precondition (f{next_state-1})
-    :effect (and (f{next_state})))
+    :effect (and (f{next_state}) (not (f{next_state-1}))))
             """)
         next_state += 1
 
@@ -203,16 +203,15 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
     (:predicates {" ".join(predicates)})
 
     (:action del-all
-    :precondition (and {goal})
-    :effect (and (f0) {" ".join([p for p in not_predicates if p != "(not (f0))"])}))
+    :precondition (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])})
+    :effect (and {" ".join(not_predicates)}))
+
+    (:action add-f0
+    :effect (and (f0) {" ".join([f"(not {p})" for p in predicates if p != "(f0)"])}))
 
     {newline.join(actions)}
-        
-    (:action nop
-    :precondition (and )
-    :effect (and ))
     )
-
+        
     """
 
     return domain
