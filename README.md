@@ -48,16 +48,16 @@ The [benchmarks.zip](./benchmarks.zip) file contains the benchmark results used 
 
 Generate a single PDDL domain using the `singlePath` template
 ```
-root@f0606f1aec12:/reversibility# python3 ./domainGenerator.py domains 5 5 1 singlePath
-Generating singlePath domain for input i = 5 ... done ... and saved as file "domains/singlePath_d005.pddl"
+root@a3e10e5aa9e6:/reversibility# python3 ./domainGenerator.py generateStandardDomains ./domains 5 5 1 singlePath
+Generating singlePath domain for input i = 5 ... done ... and saved as file "./domains/0001-singlePath-5.pddl"
 ```
 
 Find a reverse plan for action `del-all` in the PDDL domain created above using a `dfs` strategy:
 ```
-root@f0606f1aec12:/reversibility# python3 ./reversible.py domains/singlePath_d005.pddl del-all dfs
+root@a3e10e5aa9e6:/reversibility# python3 ./reversible.py ./domains/0001-singlePath-5.pddl del-all dfs
 Computing a reverse plan for action "del-all" ... I have found the following solutions:
 F0:
-Fplus: f1, f4, f0, f5, f3, f2
+Fplus: f2, f4, f5, f3, f1, f0
 Fminus:
 pi: add-f0 -> add-f1 -> add-f2 -> add-f3 -> add-f4 -> add-f5
 Path length: 6
@@ -65,11 +65,11 @@ Path length: 6
 I wont look for further solutions, because "findSingleSolution" is enabled
 ```
 
-Obtain performance benchmark information for the above example using the `asp` approach:
+Obtain performance benchmark information for the above example using the `asp_simple` approach:
 ```
-root@f0606f1aec12:/reversibility# python3 ./benchmark.py asp domains/singlePath_d005.pddl del-all 6 10
+root@a3e10e5aa9e6:/reversibility# python3 ./benchmark.py asp_simple ./domains/0001-singlePath-5.pddl del-all 6 10
 clingo version 5.4.0
-Reading from /tools/sequential-horizon.uurev.lp ...
+Reading from /tools/sequential-horizon.simple.asp ...
 Solving...
 Answer: 1
 chosen("del-all") plan("add-f0",1) plan("add-f1",2) plan("add-f2",3) plan("add-f3",4) plan("add-f4",5) plan("add-f5",6)
@@ -77,8 +77,32 @@ SATISFIABLE
 
 Models       : 1
 Calls        : 1
-Time         : 0.007s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
-CPU Time     : 0.004s
+Time         : 0.005s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 0.003s
+Command exited with non-zero status 30
+        Command being timed: "/tools/clingo /tools/sequential-horizon.simple.asp -c horizon=6 ./domains/0001-singlePath-5.pddl.lp" 
+        User time (seconds): 0.00
+        System time (seconds): 0.00
+        Percent of CPU this job got: 37%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.00
+        Average shared text size (kbytes): 0
+        Average unshared data size (kbytes): 0
+        Average stack size (kbytes): 0
+        Average total size (kbytes): 0
+        Maximum resident set size (kbytes): 5452
+        Average resident set size (kbytes): 0
+        Major (requiring I/O) page faults: 0
+        Minor (reclaiming a frame) page faults: 237
+        Voluntary context switches: 40
+        Involuntary context switches: 0
+        Swaps: 0
+        File system inputs: 0
+        File system outputs: 8
+        Socket messages sent: 0
+        Socket messages received: 0
+        Signals delivered: 0
+        Page size (bytes): 4096
+        Exit status: 30
 ```
 
 # References

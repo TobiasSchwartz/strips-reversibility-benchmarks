@@ -240,61 +240,44 @@ def barabasiAlbertLongestShortestPath(n, m):
     # start at most connected node
     node_a = sorted_nodes[0][0]
 
-    # plot the graph
-    # import matplotlib.pyplot as plt
-    # nx.draw(G, with_labels=True)
-    # plt.savefig(f"barabasiAlbert_{m}-{n}-{node_a}.png")
-
-
-    # G = nx.barabasi_albert_graph(m=m, n=n, seed=seed)
-    # shortest_paths = nx.all_pairs_shortest_path(G)
-    # G = nx.to_directed(G)
-
     shortest_paths = nx.single_source_shortest_path(G, node_a)
-    
-    longest_shortest_paths = sorted(shortest_paths.values(), key=len, reverse=True)[:1]
+    longest_shortest_path = sorted(shortest_paths.values(), key=len, reverse=True)[:1][0]
 
-    # print("\n".join([str(p) for p in longest_shortest_paths]))
-    # exit()
+    path_length = len(longest_shortest_path) - 1
+    node_b = longest_shortest_path[-1]
 
-    for path in longest_shortest_paths:
+    node_a_pred = f"(f{node_a})"
+    node_b_pred = f"(f{node_b})"
 
-        path_length = len(path) - 1
-        node_a = path[0]
-        node_b = path[-1]
+    predicates = [f"(f{j})" for j in G.nodes]
 
-        node_a_pred = f"(f{node_a})"
-        node_b_pred = f"(f{node_b})"
+    not_predicates = [f"(not {p})" for p in predicates]
 
-        predicates = [f"(f{j})" for j in G.nodes]
+    newline = "\n"
 
-        not_predicates = [f"(not {p})" for p in predicates]
+    actions = [f"""
+    (:action add-f{u}-f{v}
+    :precondition (f{u})
+    :effect (and (f{v}) (not (f{u}))))
+    """ for (u, v) in G.edges]
 
-        newline = "\n"
+    domain = f"""
+    (define (domain barabasiAlbert_{m}-{n}-{node_a}-{node_b}-{path_length})
+    (:requirements :strips :negative-preconditions)
+    (:predicates {" ".join(predicates)})
 
-        actions = [f"""
-        (:action add-f{u}-f{v}
-        :precondition (f{u})
-        :effect (and (f{v}) (not (f{u}))))
-        """ for (u, v) in G.edges]
+    (:action del-all
+    :precondition (and {node_b_pred} {" ".join([f"(not {p})" for p in predicates if p != node_b_pred])})
+    :effect (and {" ".join(not_predicates)})
+    )
 
-        domain = f"""
-        (define (domain barabasiAlbert_{m}-{n}-{node_a}-{node_b}-{path_length})
-        (:requirements :strips :negative-preconditions)
-        (:predicates {" ".join(predicates)})
+    (:action add-f{node_a}
+    :effect {node_a_pred})
 
-        (:action del-all
-        :precondition (and {node_b_pred} {" ".join([f"(not {p})" for p in predicates if p != node_b_pred])})
-        :effect (and {" ".join(not_predicates)})
-        )
-
-        (:action add-f{node_a}
-        :effect {node_a_pred})
-
-        {newline.join(actions)}
-        )
-        """
-        yield (f"{generate_domain_id()}-barabasiAlbertLongestShortestPath-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
+    {newline.join(actions)}
+    )
+    """
+    return (f"{generate_domain_id()}-barabasiAlbertLongestShortestPath-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
 
 def barabasiAlbertDegree(n, m):
@@ -443,17 +426,17 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     Path(folder).mkdir(parents=True, exist_ok=True)
 
     if domain == "barabasiAlbertLongestShortestPath":
-         # generate barabasiAlbertLongestShortestPath domains (multiple test cases per domain, currently 10)
+         # generate a barabasiAlbertLongestShortestPath domain
 
-        for (test_case_name, test_case) in barabasiAlbertLongestShortestPath(n, m):
-            print(f"Generating {test_case_name} domain ... ")
+        (test_case_name, test_case) = barabasiAlbertLongestShortestPath(n, m)
+        print(f"Generating {test_case_name} domain ... ")
 
-            filename = f"{folder}/{test_case_name}.pddl"
-            with open(filename, "w") as f:
-                f.write(test_case)
-                f.close()
-            print(f"and saved as file \"{filename}\"", end="")
-            print("")
+        filename = f"{folder}/{test_case_name}.pddl"
+        with open(filename, "w") as f:
+            f.write(test_case)
+            f.close()
+        print(f"and saved as file \"{filename}\"", end="")
+        print("")
 
     if domain == "barabasiAlbertDegree":
          # generate barabasiAlbertDegree domains (multiple test cases per domain, currently 2)
@@ -471,4 +454,4 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     
 if __name__ == "__main__":
     import fire
-    fire.Fire(generateStandardDomains, generateGeneralizedDomain, generateBarabasiAlbertDomains)
+    fire.Fire()
