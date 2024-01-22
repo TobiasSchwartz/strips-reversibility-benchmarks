@@ -82,7 +82,7 @@ def benchmark(approach, domainPath, reversibleActionName, horizon, timeoutLimit)
                 
                 tempf.seek(0)
                 output = tempf.read().decode('utf-8')
-                # print(output)
+                print(output)
                 wallClock = parseWallClock(output)
                 setSize = parseSetSize(output)
                 return (domainPath, approach, reversibleActionName, horizon, timeoutLimit, wallClock, setSize)

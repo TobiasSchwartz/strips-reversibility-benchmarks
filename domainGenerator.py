@@ -444,7 +444,7 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     Path(folder).mkdir(parents=True, exist_ok=True)
 
     if domain == "barabasiAlbertLongestShortestPath":
-         # generate barabasiAlbertLongestShortestPath domains (multiple test cases per domain, currently 10)
+         # generate a barabasiAlbertLongestShortestPath domain
 
         for (test_case_name, test_case) in barabasiAlbertLongestShortestPath(n, m):
             print(f"Generating {test_case_name} domain ... ")
@@ -472,4 +472,4 @@ def generateBarabasiAlbertDomains(folder, n, m, domain):
     
 if __name__ == "__main__":
     import fire
-    fire.Fire(generateStandardDomains, generateGeneralizedDomain, generateBarabasiAlbertDomains)
+    fire.Fire()
