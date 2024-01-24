@@ -56,8 +56,8 @@ if __name__ == "__main__":
         # "singlePath",
         # "multiplePaths",
         # "multiplePathsDeadEnds",
-        # "generalized",
-        "barabasiAlbertLongestShortestPath"
+        "generalized",
+        # "barabasiAlbertLongestShortestPath"
     ]
 
     domains_folder = "domains"
@@ -78,27 +78,29 @@ if __name__ == "__main__":
 
     ##### Generate generalized domains
     if "generalized" in domain_types:
-        step_range = np.arange(1.0, 101.1, 5.0)
 
-        # Scenario 1
+        factor = 1
+        domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  20, 4)
+        domainGenerator.generateGeneralizedDomain(domains_folder, 6,  10,  4, 10)
+        domainGenerator.generateGeneralizedDomain(domains_folder, 10,  4,  2, 2)
+
+        step_range = np.arange(0.0, 100.1, 5.0)
         for factor in step_range:
+            # Scenario 1
             domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(20*factor), 4)
-
-        # # Scenario 2
-        for factor in step_range:
+            # Scenario 2
             domainGenerator.generateGeneralizedDomain(domains_folder, int(6*factor),  10,  int(4*factor), 10)
-
-        # Scenario 3
-        for factor in step_range:
+            # Scenario 3
             domainGenerator.generateGeneralizedDomain(domains_folder, 10,  4,  int(2*factor), int(2*factor))
 
-    #### Generate barabasiAlbertLongestShortestPath domains
+    ##### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
         for n in range(2000, 6001, 200):
+            # m = 1
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 1, "barabasiAlbertLongestShortestPath")
-        for n in range(2000, 6001, 200):
+            # m = 5
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 5, "barabasiAlbertLongestShortestPath")
-        for n in range(2000, 6001, 200):
+            # m = n-1
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, n-1, "barabasiAlbertLongestShortestPath")
 
     timestamp = time.time()
