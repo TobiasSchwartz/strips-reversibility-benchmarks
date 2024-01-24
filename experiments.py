@@ -56,7 +56,7 @@ if __name__ == "__main__":
         # "singlePath",
         # "multiplePaths",
         # "multiplePathsDeadEnds",
-        "generalized",
+        # "generalized",
         "barabasiAlbertLongestShortestPath"
     ]
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     ##### Generate generalized domains
     if "generalized" in domain_types:
-        step_range = np.arange(1.0, 61.1, 3.0)
+        step_range = np.arange(1.0, 101.1, 5.0)
 
         # Scenario 1
         for factor in step_range:
@@ -94,11 +94,11 @@ if __name__ == "__main__":
 
     #### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
-        for n in range(1000, 5001, 200):
+        for n in range(2000, 6001, 200):
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 1, "barabasiAlbertLongestShortestPath")
-        for n in range(1000, 5001, 200):
+        for n in range(2000, 5001, 200):
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 5, "barabasiAlbertLongestShortestPath")
-        for n in range(1000, 5001, 200):
+        for n in range(2000, 5001, 200):
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, n-1, "barabasiAlbertLongestShortestPath")
 
     timestamp = time.time()
@@ -124,7 +124,7 @@ if __name__ == "__main__":
                     f.write("approach,domain_type,horizon,m,n,node_a,node_b,domain_size,path,runtime_seconds,set_size_mb\n")
 
     #### Run experiments
-    timeout = 60
+    timeout = 120
     pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
     for path in pathlist:
