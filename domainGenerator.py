@@ -282,7 +282,6 @@ def barabasiAlbertLongestShortestPath(n, m):
     {newline.join(actions)}
     )
     """
-
     return (f"{generate_domain_id()}-barabasiAlbertLongestShortestPath-{m}-{n}-{node_a}-{node_b}-{path_length}", domain)
 
 
