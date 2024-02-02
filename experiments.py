@@ -49,7 +49,7 @@ if __name__ == "__main__":
         "bfs",
         "asp_simple",
         "asp_general",
-        "qasp",
+        "qasp"
     ]
 
     # specify domains of which types are created and evaluated
@@ -79,27 +79,28 @@ if __name__ == "__main__":
 
     ##### Generate generalized domains
     if "generalized" in domain_types:
-        step_range = np.arange(1.0, 5.3, 0.3)
 
-        # Scenario 1: only one success path, many dead ends, all paths short
+        domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  20, 4)
+        domainGenerator.generateGeneralizedDomain(domains_folder, 6,  10,  4, 10)
+        domainGenerator.generateGeneralizedDomain(domains_folder, 10,  4,  2, 2)
+
+        step_range = np.arange(5.0, 100.1, 5.0)
         for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(4*factor), 4)
+            # Scenario 1
+            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(20*factor), 4)
+            # Scenario 2
+            domainGenerator.generateGeneralizedDomain(domains_folder, int(6*factor),  10,  int(4*factor), 10)
+            # Scenario 3
+            domainGenerator.generateGeneralizedDomain(domains_folder, 10,  4,  int(2*factor), int(2*factor))
 
-        # Scenario 2: only one success path, few dead ends, all paths long
-        for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 1,  int(4*factor),  int(2*factor), int(4*factor))
-
-        # Scenario 3: few short success paths, many long dead ends
-        for factor in step_range:
-            domainGenerator.generateGeneralizedDomain(domains_folder, 2,  4,  int(4*factor), int(4*factor))
-
-    #### Generate barabasiAlbertLongestShortestPath domains
+    ##### Generate barabasiAlbertLongestShortestPath domains
     if "barabasiAlbertLongestShortestPath" in domain_types:
-        for n in range(10, 201, 10):
+        for n in range(2000, 6001, 200):
+            # m = 1
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 1, "barabasiAlbertLongestShortestPath")
-        for n in range(10, 201, 10):
+            # m = 5
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, 5, "barabasiAlbertLongestShortestPath")
-        for n in range(10, 201, 10):
+            # m = n-1
             domainGenerator.generateBarabasiAlbertDomains(domains_folder, n, n-1, "barabasiAlbertLongestShortestPath")
 
     timestamp = time.time()
@@ -112,7 +113,6 @@ if __name__ == "__main__":
             domain_types.remove("barabasiAlbertLongestShortestPath")
             domain_types.append("barabasiAlbertLongestShortestPath-1")
             domain_types.append("barabasiAlbertLongestShortestPath-5")
-            domain_types.append("barabasiAlbertLongestShortestPath-9")
             domain_types.append("barabasiAlbertLongestShortestPath-max")
         for domain_type in domain_types:
             with open(f"./experiments/{domain_type}-{approach}-{timestamp}.csv", "a+") as f:
@@ -126,7 +126,7 @@ if __name__ == "__main__":
                     f.write("approach,domain_type,horizon,m,n,node_a,node_b,domain_size,path,runtime_seconds,set_size_mb\n")
 
     #### Run experiments
-    timeout = 60
+    timeout = 120
     pathlist = Path(f"./{domains_folder}/").glob(f'*.pddl')
 
     for path in pathlist:

@@ -148,8 +148,9 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
     print(f"total_states: {total_states}")
 
     predicates = [f"(f{j})" for j in range(0, total_states)]
-
     not_predicates = [f"(not {p})" for p in predicates]
+
+    predicates += ["(f-init)"]
 
     newline = "\n"
 
@@ -204,10 +205,11 @@ def generalized(num_plans_success, length_plans_success, num_plans_dead_end, len
 
     (:action del-all
     :precondition (and {goal} {" ".join([f"(not {p})" for p in predicates if p != goal])})
-    :effect (and {" ".join(not_predicates)}))
+    :effect (and {" ".join(not_predicates)} (f-init)))
 
     (:action add-f0
-    :effect (and (f0) {" ".join([f"(not {p})" for p in predicates if p != "(f0)"])}))
+    :precondition (f-init)
+    :effect (and (f0) (not (f-init))))
 
     {newline.join(actions)}
     )
@@ -235,10 +237,11 @@ def barabasiAlbertLongestShortestPath(n, m):
     G.remove_edges_from([(u,v) for (u,v) in G.edges if u > v])
 
     # sort nodes by out degree
-    sorted_nodes = sorted(G.out_degree, key=lambda x: x[1], reverse=True)
+    # sorted_nodes = sorted(G.out_degree, key=lambda x: x[1], reverse=True)
 
     # start at most connected node
-    node_a = sorted_nodes[0][0]
+    # node_a = sorted_nodes[0][0]
+    node_a = 0
 
     shortest_paths = nx.single_source_shortest_path(G, node_a)
     longest_shortest_path = sorted(shortest_paths.values(), key=len, reverse=True)[:1][0]
@@ -250,8 +253,9 @@ def barabasiAlbertLongestShortestPath(n, m):
     node_b_pred = f"(f{node_b})"
 
     predicates = [f"(f{j})" for j in G.nodes]
-
     not_predicates = [f"(not {p})" for p in predicates]
+
+    predicates +=  ["(f-init)"]
 
     newline = "\n"
 
@@ -268,11 +272,12 @@ def barabasiAlbertLongestShortestPath(n, m):
 
     (:action del-all
     :precondition (and {node_b_pred} {" ".join([f"(not {p})" for p in predicates if p != node_b_pred])})
-    :effect (and {" ".join(not_predicates)})
+    :effect (and (f-init) {" ".join(not_predicates)})
     )
 
     (:action add-f{node_a}
-    :effect {node_a_pred})
+    :precondition (f-init)
+    :effect (and {node_a_pred} (not (f-init))))
 
     {newline.join(actions)}
     )
@@ -396,7 +401,7 @@ def generateGeneralizedDomain(folder, num_plans_success, length_plans_success, n
     from pathlib import Path
     Path(folder).mkdir(parents=True, exist_ok=True)
 
-    path_length = max(length_plans_success, length_plans_dead_end)
+    path_length = length_plans_success
 
     domain_name = f"{generate_domain_id()}-generalized-{num_plans_success}-{length_plans_success}-{num_plans_dead_end}-{length_plans_dead_end}-{path_length}"
 
