@@ -48,16 +48,17 @@ if __name__ == "__main__":
         "dfs",
         "bfs",
         "asp_simple",
-        # "asp_general"
+        "asp_general",
+        "qasp"
     ]
 
     # specify domains of which types are created and evaluated
     domain_types = [
-        # "singlePath",
-        # "multiplePaths",
-        # "multiplePathsDeadEnds",
+        "singlePath",
+        "multiplePaths",
+        "multiplePathsDeadEnds",
         "generalized",
-        # "barabasiAlbertLongestShortestPath"
+        "barabasiAlbertLongestShortestPath"
     ]
 
     domains_folder = "domains"
@@ -79,12 +80,11 @@ if __name__ == "__main__":
     ##### Generate generalized domains
     if "generalized" in domain_types:
 
-        factor = 1
         domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  20, 4)
         domainGenerator.generateGeneralizedDomain(domains_folder, 6,  10,  4, 10)
         domainGenerator.generateGeneralizedDomain(domains_folder, 10,  4,  2, 2)
 
-        step_range = np.arange(0.0, 100.1, 5.0)
+        step_range = np.arange(5.0, 100.1, 5.0)
         for factor in step_range:
             # Scenario 1
             domainGenerator.generateGeneralizedDomain(domains_folder, 1,  4,  int(20*factor), 4)
