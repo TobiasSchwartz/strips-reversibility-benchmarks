@@ -42,8 +42,6 @@ Run `python3 ./<script> --help` where `<script>` is one of the provided python s
 
 To reproduce the results from our papers, execute the [`experiments.py`](experiments.py) script from within the docker container via `python3 ./experiments.py`. The obtained performance results are stored in the `experiments` folder. A single csv file is generated for each approach (`dfs`, `bfs`, `asp_simple`, `asp_general`, `qasp`) and domain generator (`singlePath`, `multiplePaths`, `multiplePathsDeadEnds`, `generalized`, `barabasiAlbertLongestShortestPath`, `barabasiAlbertDegree`) combination.
 
-The [benchmarks.zip](./benchmarks.zip) file contains the benchmark results used in our AMAI submission.
-
 ## Further Examples
 
 Generate a single PDDL domain using the `singlePath` template
